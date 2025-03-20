@@ -9,8 +9,8 @@ void main() {
     int status = 0;
 
     if (child_p == 0) {
-        printf("I am the child process, thus my PID be %d\n", child_p);
-        exit(1);
+        printf("I am the child process, thus my PID be %d (%d)\n", child_p, getpid());
+        exit(0);
     }
     wait(&status);
     printf("I spawned the child process, which PID was %d\n", child_p);
