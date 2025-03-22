@@ -1,6 +1,6 @@
 \chapter{Aufgabe 1}
 
-\section{Teil a)}
+\section{Teil 1)}
 
 \textit{Warum ist es wichtig zu wissen, an welcher Speicherstelle das Programm startet?}\\
 
@@ -24,4 +24,40 @@ Ein \textbf{Befehlszähler} als Teil eines \textbf{Leitwerks}\footnote{
 \noindent
 In diesem Zusammenhang darf man die Startadresse wohl wie den Startzustand eines Turingautomaten verstehen, der entsprechend einer geg. Zustandsüberführungsfunktion $\delta$ (dem \textit{Turingprogramm}, vgl.~\cite{VW16h}[269 f.]) - eine Eingabe berarbeitet.
 
-\section{Lösungsvorschlag}
+\section{Teil 2}
+
+Der Lösungsvorschlag ist in Tabelle~\ref{tab:speicherinstruktionen} angegeben.
+
+\begin{table}[h!]
+    \setlength{\tabcolsep}{0.5em}
+    \def\arraystretch{1.5}
+    \centering
+    \begin{tabular}{|c|c|l|l|}
+        \hline
+        \textbf{Zeile} & \textbf{Speicheradresse} & \multicolumn{2}{c|}{\textbf{Instruktion}} \\
+        \cline{3-4}
+        &                          & \textbf{Hex-Code} & \textbf{Mnemonics (Kürzel)} \\
+        \hline
+        $1$ & $0000$ & \texttt{4f} & \texttt{start CLR A}  \\
+
+        $2$ & $0001$ & \texttt{b6 00 14} & \qquad\quad\texttt{LDA A value}  \\
+
+        $3$ & $0004$ & \texttt{b7 00 12} & \qquad\quad\texttt{STA A result1}  \\
+
+        $4$ & $0007$ & \texttt{8b 0f} & \qquad\quad\texttt{ADD A \#15}  \\
+
+        $5$ & $0009$ & \texttt{7e 00 0c} & \qquad\quad\texttt{JMP next}  \\
+
+        $6$ & $000c$ & \texttt{b7 00 13} & \texttt{next STA A result2}  \\
+
+        $7$ & $000f$ & \texttt{7e 00 00} & \qquad\quad\texttt{JMP start}\\
+        &&&\\
+        $8$ & $0012$ & \texttt{00} & \texttt{result1 byte 00}  \\
+        $9$ & $0013$ & \texttt{00} & \texttt{result2 byte 00}  \\
+        $10$ & $0014$ & \texttt{40} & \texttt{value byte 40}  \\
+
+        \hline
+    \end{tabular}
+    \caption{Lösungsvorschlag zu Aufgabe 1.2}
+    \label{tab:speicherinstruktionen}
+\end{table}
