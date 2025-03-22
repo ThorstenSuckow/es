@@ -1,0 +1,236 @@
+%%%%%%%%%%%%%%%%%%% vorlage.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% LaTeX-Vorlage zur Erstellung von Projekt-Dokumentationen
+% im Fachbereich Informatik der Hochschule Trier
+%
+% Basis: Vorlage svmono des Springer Verlags
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[envcountsame,envcountchap, deutsch]{i-studis}
+
+\usepackage{footnote}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{float}
+\usepackage{python}
+\usepackage{xparse}
+\usepackage{enumitem}
+\usepackage[outputdir=../../auxil]{minted}
+\usepackage{comment}
+\usepackage[normalem]{ulem}
+\usepackage[inkscapeformat=png]{svg}
+\usepackage[titles]{tocloft}
+\usepackage{titlesec}
+\usepackage[pdftex,plainpages=false]{hyperref}
+\usepackage{xurl}
+\usepackage[toc]{glossaries}
+\usepackage[titletoc,title,page, header]{appendix} % Anhang
+\usepackage[backend=biber, style=alphabetic, isbn=true, doi=true]{biblatex}
+\usepackage{makeidx}         	% Index
+\usepackage{multicol}% Zweispaltiger Index
+\usepackage[threshold=0]{csquotes}
+\usepackage{soul}
+\usepackage{caption}
+\usepackage{makecell}
+\usepackage{stix}
+\usepackage{tabularx}
+
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{6}
+
+\captionsetup{font=small}
+\captionsetup{labelfont=bf}
+
+\newcommand{\textgreek}[1]{\begingroup\fontencoding{LGR}\selectfont#1\endgroup}
+
+\BeforeBeginEnvironment{tcolorbox}{\savenotes}
+\AfterEndEnvironment{tcolorbox}{\spewnotes}
+
+%\usepackage[bottom]{footmisc}	% Erzeugung von Fu�noten
+
+%%-----------------------------------------------------
+%\newif\ifpdf
+%\ifx\pdfoutput\undefined
+%\pdffalse
+%\else
+%\pdfoutput=1
+%\pdftrue
+%\fi
+%%--------------------------------------------------------
+%\ifpdf
+\usepackage[pdftex]{graphicx}
+\usepackage{epstopdf}
+
+\usepackage{tcolorbox}
+\usepackage[table]{colortbl}% http://ctan.org/pkg/xcolor
+%\else
+%\usepackage{graphicx}
+%\usepackage[plainpages=false]{hyperref}
+%\fi
+
+%%-----------------------------------------------------
+\usepackage{color}				% Farbverwaltung
+%\usepackage{ngerman} 			% Neue deutsche Rechtsschreibung
+\usepackage[english, ngerman]{babel}
+
+\renewcommand\appendixpagename{Anhänge}
+\renewcommand\appendixtocname{Anhänge}
+%%-----------------------------------------------------
+% Unterscheidung für Umlaute Windows-Mac
+%%-----------------------------------------------------
+
+%\usepackage[latin1]{inputenc} 	% Ermöglicht Umlaute-Darstellung
+\usepackage[utf8]{inputenc}  	% Ermöglicht Umlaute-Darstellung unter Linux (je nach verwendetem Format)
+
+%-----------------------------------------------------
+\usepackage{listings} 			% Code-Darstellung
+\lstset
+{
+	basicstyle=\ttfamily,
+% print whole listing small
+	mathescape,
+	columns=fullflexible,
+	literate=%
+		{Ö}{{\"O}}1
+		{Ä}{{\"A}}1
+		{Ü}{{\"U}}1
+		{ß}{{\ss}}1
+		{ü}{{\"u}}1
+		{ä}{{\"a}}1
+		{ö}{{\"o}}1
+}
+
+\NewDocumentCommand{\code}{v}{%
+	\texttt{\textcolor{blue}{#1}}%
+}
+\NewDocumentCommand{\staticcode}{v}{%
+	\ul{{\texttt{\textcolor{blue}{#1}}}}%
+}
+
+
+
+\usepackage{textcomp} 			% Celsius-Darstellung
+\usepackage{amssymb,amsfonts,amstext,amsmath}	% Mathematische Symbole
+\usepackage[german, ruled, vlined]{algorithm2e}
+\usepackage[a4paper]{geometry} % Andere Formatierung
+\usepackage{bibgerm}
+\usepackage{array}
+\usepackage{mathtools}
+\usepackage{mdwtab}
+\usepackage{datagidx}
+\usepackage{lstmisc}
+\usepackage{wasysym}
+\usepackage{booktabs}
+\hyphenation{Ele-men-tar-ob-jek-te  ab-ge-tas-tet Aus-wer-tung House-holder-Matrix Le-ast-Squa-res-Al-go-ri-th-men} 		% Weitere Silbentrennung bei Bedarf angeben
+\setlength{\textheight}{1.1\textheight}
+\pagestyle{myheadings} 			% Erzeugt selbstdefinierte Kopfzeile
+\makeindex 						% Index-Erstellung
+
+% uncomment to hide tables, equations and figures
+%\excludecomment{confidential}
+%\excludecomment{figure}
+%\excludecomment{equation}
+%\excludecomment{table}
+%\let\endfigure\relax
+%\let\endtable\relax
+%\let\endequation\relax
+
+
+\DeclareFieldFormat{doi}{\textsc{doi}: \texttt{#1}}
+\DeclareFieldFormat{isbn}{\textsc{isbn}: \texttt{#1}}
+
+\DeclareFieldFormat{postnote}{#1}
+\DeclareFieldFormat{multipostnote}{#1}
+
+\addbibresource{literatur.bib}
+
+
+\newglossarystyle{mystyle}{%
+	\setglossarystyle{treegroup}%
+
+	\renewcommand*{\glossentry}[2]{%
+		\glsentryitem{##1}\textbf{\glstarget{##1}{\glossentryname{##1}}}%
+		\par
+		\glossentrydesc{##1}
+		\par
+		\vspace{1cm}
+	}%
+}
+
+\setglossarystyle{mystyle}
+
+
+
+%\makenoidxglossaries
+%\loadglsentries{chapters/Glossar/index.tex}
+
+%--------------------------------------------------------------------------
+\begin{document}
+
+%------------------------- Titelblatt -------------------------------------
+	\title{\begin{center}
+			   Einsendeaufgaben ES (1)
+
+			   \textbf{}\\
+			   \\
+
+			   \\
+			   \small{Modul es, SS25} \\ \small{Trier University of Applied Sciences}\\ \small{Informatik Fernstudium (M.C.Sc.)}
+	\end{center}}
+	\project{}
+%--------------------------------------------------------------------------
+	\supervisor{Titel Vorname Name} 		% Betreuer der Arbeit
+	\author{\begin{center}
+
+	\end{center}}							% Autor der Arbeit
+	\address{\begin{center}
+				 \small{22.03.2025\\  Thorsten Suckow-Homberg, \url{thorsten@suckow-homberg.de}}
+	\end{center}} 							% Im Zusammenhang mit dem Datum wird hinter dem Ort ein Komma angegeben
+	\submitdate{} 				% Abgabedatum
+%\begingroup
+%  \renewcommand{\thepage}{title}
+%  \mytitlepage
+%  \newpage
+%\endgroup
+
+
+
+	\begingroup
+	\renewcommand{\thepage}{Titel}
+	\mytitlepage
+	\newpage
+	\endgroup
+%--------------------------------------------------------------------------
+	\frontmatter
+%--------------------------------------------------------------------------
+
+	\tableofcontents 						% Inhaltsverzeichnis
+%--------------------------------------------------------------------------
+	\mainmatter                        		% Hauptteil (ab hier arab. Seitenzahlen)
+%--------------------------------------------------------------------------
+% Die Kapitel werden in separaten .tex-Dateien abgelegt und hier eingebunden.
+	\input{index}
+
+
+	%\glsaddall
+	%\printnoidxglossary[title=Glossar, toctitle=Glossar]
+
+	%\input{chapters/Anhang/index}
+
+%\input{chapters/ZusammenfassungAusblick}
+% ...
+%--------------------------------------------------------------------------
+	\backmatter                        		% Anhang
+%-------------------------------------------------------------------------
+
+%\bibliographystyle{geralpha}			% Literaturverzeichnis
+%\bibliography{literatur}     			% BibTeX-File literatur.bib
+%\raggedright
+	\sloppy
+	\printbibliography
+	\fussy
+
+	\printindex
+
+
+\end{document}
