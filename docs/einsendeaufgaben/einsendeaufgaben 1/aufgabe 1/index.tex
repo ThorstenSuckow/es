@@ -97,3 +97,48 @@ Es werden die folgenden Speicherstellen für die Ablage von Daten verwendet:
     \item \texttt{0014}
 \end{itemize}
 
+\section{Teil 4}
+
+\noindent
+\textit{Welche Rechnung führt das Programm aus?}\\
+
+\noindent
+Überführung in C-Code zur einfacheren Nachvollziehbarkeit:
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{c}
+
+    int A       = 0x00; // Hilfsvariable für Akkumulator
+    int result1 = 0x00; // result1 byte 00
+    int result2 = 0x00; // result2 byte 00
+    int value   = 0x40;   // value   byte 40
+
+    start:
+        A        = 0x00;  // CLR A
+        A        = value; // LDA A value
+        result1  = A;     // STA A result1
+        A       += 15;    // ADD A#15
+        goto next;        // JMP next
+
+    next:
+        result2 = A;      // STA A result 2
+        goto start;       // JMP start
+\end{minted}\\
+
+\noindent
+\begin{itemize}
+    \itemsep0.5em
+    \item \texttt{start}
+    \item[] In dem Programmteil werden die Variablen initialisiert.
+    In den Akkumulator \code{A} wird der Wert von \code{value} geschrieben; da sich \code{value} während der Programmausführung nie ändert, wird \code{A} im weiteren Programmablauf an dieser Stelle - da durch \code{CLR A}  der Inhalt des Akkumulators vorher gelöscht wird - immer mit dem Wert $64$ (dezimal) belegt.\\
+    Der Inhalt des Akkumulators wird daraufhin in die durch \code{result1} repräsentierte Speicherstelle geschrieben.\\
+     Anschliessen wird zu dem Wert in \code{A} der Wert $15$ (dezimal) hinzuaddiert, das Ergebnis entspricht etwa \code{A = 79}.\\
+    \code{result1} bleibt indes unverändert.
+    \item \texttt{next}
+    \item[] Der Programmteil \texttt{start} springt in den durch den Identifier ausgezeichneten Programmteil \texttt{next}.\\
+    Hier wird der Wert von \code{A} in die Speicherstelle von \code{result2} geschrieben (entspricht etwa \code{result2 = 79}).\\
+    Danach wird zurück in den Programmteil \texttt{start} gesprungen, die Ausführung wiederholt sich.
+\end{itemize}
