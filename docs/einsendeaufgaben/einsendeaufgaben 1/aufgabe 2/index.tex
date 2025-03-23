@@ -50,3 +50,49 @@ Für $y_1$ erhalten wir die DNF wie in~\ref{eq:dnf_y1} angegeben:
     &(\phantom{\neg} a \ \land   \phantom{\neg} b \ \land \neg c \ \land  \phantom{\neg} d) && \text{(13)}
 \end{alignat}
 \end{equation}
+
+
+\section{Teil 2}
+
+\textit{Prüfen Sie anhand der KV-Diagramme nach, ob $y_3$, $y_2$ und $y_1$ minimiert
+werden können. Wenn Minimierungen möglich sind, markieren Sie die Bereiche in den KV-Diagrammen.}\\
+
+\noindent
+Die KV-Diagramme sind in den Abbildungen~\ref{fig:kv_y1} für $y_1$, ~\ref{fig:kv_y2} für $y_2$ und ~\ref{fig:kv_y2} für $y_3$ dargestellt (Subskripte verweisen auf die Zeilen der in der Aufgabenstellung angegebenen Tabelle).
+\\
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{aufgabe 2/img/kv_y3}
+    \caption{Karnaugh-Veitch-Diagramm für $y_3$ (Quelle: eigene)}
+    \label{fig:kv_y3}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{aufgabe 2/img/kv_y2}
+    \caption{Karnaugh-Veitch-Diagramm für $y_2$ (Quelle: eigene)}
+    \label{fig:kv_y2}
+\end{figure}
+
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{aufgabe 2/img/kv_y1}
+    \caption{Karnaugh-Veitch-Diagramm für $y_1$ (Quelle: eigene)}
+    \label{fig:kv_y1}
+\end{figure}
+
+\noindent
+Wie sich aus den Diagrammen ergibt, ist nur eine Minimierung für $y_1$ möglich.
+Die Minimierung ist in~\ref{eq:min_y1} angegeben:
+
+\begin{equation}\label{eq:min_y1}
+\begin{alignat}{3}
+    y_1 =\ &(\neg c \ \land \neg d)\ &&\lor   \\
+    &(\phantom{\neg} a \ \land \phantom{\neg} b)\ &&\lor  \\
+    &(\neg a \ \land \neg b \ \land \neg c \ \land   \phantom{\neg} d)\ &&\lor  \\
+    &(\phantom{\neg} a \ \land \neg b \ \land  \phantom{\neg} c \ \land   \phantom{\neg} d)\ &&\lor  \\
+    &(\neg a \ \land \neg b \ \land \phantom{\neg} c \ \land  \neg d)
+\end{alignat}
+\end{equation}
