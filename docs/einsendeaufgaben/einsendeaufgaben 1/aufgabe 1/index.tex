@@ -5,12 +5,12 @@
 \textit{Warum ist es wichtig zu wissen, an welcher Speicherstelle das Programm startet?}\\
 
 \noindent
-Würde die Information fehlen, an welcher Stelle ein Programm startet,  würde u.a. Speicher nicht richtig initialisiert oder zurückgesetzt: So zeigen \textit{Bollenbacher und Liell} in~\cite{BL22}[\textbf{Tabelle 19}, 86] ein Programm zur Addition zweier Zahlen auf dem M6800\footnote{
+Wir dürfen für den allgemeinen Fall feststellen: Würde die Information fehlen, an welcher Stelle ein Programm startet,  würde u.a. Speicher nicht richtig initialisiert oder zurückgesetzt. So zeigen \textit{Bollenbacher und Liell} in~\cite[\textbf{Tabelle 19}, 86]{BL22} ein Programm zur Addition zweier Zahlen auf dem M6800\footnote{
 \url{https://en.wikipedia.org/wiki/Motorola_6800}, abgerufen 22.03.2025
 }, das mit der Instruktion \texttt{CLR A}\footnote{
 s. a. \url{http://www.8bit-era.cz/6800.html#CLR}, abgerufen 22.03.2025
 } beginnt, und damit den Inhalt des  Akkumulators\footnote{
-Register zur Aufnahme von Operanden bzw. Ergebnissen einer Rechenoperation, vgl.~\cite{Fri21}[233])
+Register zur Aufnahme von Operanden bzw. Ergebnissen einer Rechenoperation, vgl.~\cite[233]{Fri21})
 } löscht.
 Würde in diesem Beispiel die Startadresse des Programms nicht bekannt sein, würde - sofern überhaupt eine (sinnvolle) Rechenoperation ausgeführt wird - unter hoher Wahrscheinlichkeit mit Artefakten vorhergehender Rechenoperationen gearbeitet bzw. das Programm in einem fremden Adressraum operieren.\\
 
@@ -18,11 +18,11 @@ Würde in diesem Beispiel die Startadresse des Programms nicht bekannt sein, wü
 Insgesamt darf man wohl behaupten, dass ohne Kenntnis der Startadresse eines Programm ein (deterministischer) \textbf{Rechenbetrieb nicht möglich} wäre, zumal darauffolgende anzusteuernde Operationen über den Befehlszähler auf den nächsten auszuführenden Befehl zeigen\footnote{
 Ein \textbf{Befehlszähler} als Teil eines \textbf{Leitwerks}\footnote{
     hier insb. bei der Von-Neumann-Rechnerarchitektur
-} ist ein Register, der die Adressen des als nächstes auszuführenden Maschinen-Befehls enthält (vgl.~\cite{Fri21}[234]).
+} ist ein Register, der die Adressen des als nächstes auszuführenden Maschinen-Befehls enthält (vgl.~\cite[234]{Fri21}).
 }, und sich daraus ja gerade die auszuführenden Rechneoperationen ergeben.\\
 
 \noindent
-In diesem Zusammenhang darf man die Startadresse wohl wie den Startzustand eines Turingautomaten verstehen, der entsprechend einer geg. Zustandsüberführungsfunktion $\delta$ (dem \textit{Turingprogramm}, vgl.~\cite{VW16h}[269 f.]) - eine Eingabe berarbeitet.
+Abstrahieren wir ausgehend von dem Fall des Assemblerprogramms weiter, können wir die Startadresse wie den \textit{Startzustand} eines Turingautomaten verstehen, der entsprechend einer geg. Zustandsüberführungsfunktion $\delta$ (dem \textit{Turingprogramm}, vgl.~\cite[269 f.]{VW16h}) eine Eingabe verarbeitet.
 
 \section{Teil 2}
 
