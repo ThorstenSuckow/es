@@ -1,0 +1,52 @@
+\chapter{Aufgabe 2}
+
+\section{Teil 1}
+
+\textit{Geben Sie die Schaltfunktionen von $y_3$, $y_2$ und $y_1$ an.}\\
+
+
+\noindent
+
+\noindent
+Zur Erstellung der Schaltfunktionen für die jeweiligen Ausgänge $y_3$, $y_2$, $y_1$ überführen wir zeilenweise in die DNF.\\
+Hierzu bilden wir für die jeweiligen Ausgänge die Minterme\footnote{
+    ``für genau eine Variablenbelegung wahr``~\cite[92]{Hof22}
+} und verknüpfen sie dann disjunktiv (Ziffern in Klammern beziehen sich auf die Zeilen der in der Aufgabenstellung angegebenen Tabelle).\\
+
+\noindent
+Für $y_3$ erhalten wir die DNF wie in~\ref{eq:dnf_y3} angegeben:
+
+
+\begin{equation}\label{eq:dnf_y3}
+\begin{alignat}{3}
+    y_3 =\ &(\neg a \ \land \phantom{\neg} b \ \land \phantom{\neg} c \ \land \phantom{\neg} d)\ \lor && \text{(7)} \\
+          &(\phantom{\neg} a \ \land \phantom{\neg} b \ \land \phantom{\neg} c \ \land \neg d) && \text{(14)}
+\end{alignat}
+\end{equation}
+
+\noindent
+Für $y_2$ erhalten wir die DNF wie in~\ref{eq:dnf_y2} angegeben:
+
+
+\begin{equation}\label{eq:dnf_y2}
+\begin{alignat}{3}
+    y_2 =\ &(\neg a \ \land \phantom{\neg} b \ \land \neg c \ \land \phantom{\neg} d)\ \lor && \text{(5)} \\
+    &(\phantom{\neg} a \ \land \neg b \ \land \neg c \ \land \phantom{\neg} d)\ \lor && \text{(9)}  \\
+    &(\phantom{\neg} a \ \land \neg b \ \land  \phantom{\neg} c \ \land \neg d) && \text{(10)}
+\end{alignat}
+\end{equation}
+
+\noindent
+Für $y_1$ erhalten wir die DNF wie in~\ref{eq:dnf_y1} angegeben:
+
+
+\begin{equation}\label{eq:dnf_y1}
+\begin{alignat}{3}
+    y_1 =\ &(\neg a \ \land \neg b \ \land \neg c \ \land \phantom{\neg} d)\ \lor && \text{(1)}  \\
+    &(\neg a \ \land \neg b \ \land  \phantom{\neg} c \ \land \neg d)\ \lor && \text{(2)}  \\
+    &(\neg a \ \land  \phantom{\neg} b \ \land \neg  c \ \land \neg d)\ \lor && \text{(4)}  \\
+    &(\phantom{\neg} a \ \land  \phantom{\neg} b \ \land \neg  c \ \land \neg d)\ \lor && \text{(8)}  \\
+    &(\phantom{\neg} a \ \land  \neg b \ \land \phantom{\neg} c \ \land  \phantom{\neg} d)\ \lor && \text{(11)}  \\
+    &(\phantom{\neg} a \ \land   \phantom{\neg} b \ \land \neg c \ \land  \phantom{\neg} d) && \text{(13)}
+\end{alignat}
+\end{equation}
