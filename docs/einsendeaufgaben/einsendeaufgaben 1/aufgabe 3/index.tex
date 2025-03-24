@@ -88,7 +88,7 @@ Es zeigt sich, dass keine Blöcke zusammengefasst werden können.
 \textit{Geben Sie eine Schaltung an, die die (gerade) Parität für das Datenwort  0001 generiert.}\\
 
 \noindent
-Die Schaltung für die Funktion $\neg A_3 \land \neg A_2 \land \neg A_1 \land A_0$ ist in Abbildung~\ref{fig:schaltplan_parität} angegeben.
+Die Schaltung für die Funktion $\neg A_3 \land \neg A_2 \land \neg A_1 \land A_0$ ist in Abbildung~\ref{fig:schaltplan_parität} angegeben (laut \textit{Aufgabenstellung}, ansonsten Schaltung mittels \textit{XOR}-Gattern für den allgemeinen Fall).
 
 \begin{figure}
     \centering
@@ -138,7 +138,7 @@ Die Abbildung mit der vorgeschlagenen Beschaltung ist in Abbildung~\ref{fig:mult
     \itemsep0.5em
     \item Die Eingänge $In_0, In_1, \ldots In_{15}$ ``entsprechen`` zeilenweise dem jeweiligen $y$ aus Tabelle~\ref{tab:paritätsbit} -
     da die Eingänge allerdings negiert an $W$ ausgegeben werden, müssen diese \textit{negiert} als Eingaben angelegt werden, also
-     $In_i = \neg y_i$, mit $i \in [0..15]$ ($i$ ist Zeilenindex, also $i = (A_3 A_2 A_1 A_0)_2$).
+     $In_i = \neg y_i$, mit $i \in [0..15]$ ($i$ ist Zeilenindex, also $i = (A_3 A_2 A_1 A_0)_{(2)}$).
     \item An den Data Inputs $D, C, B, A$  liegen entsprechend die Werte für $A_3, A_2, A_1, A_0$ an (s. Tabelle~\ref{tab:paritätsbit}), also $2^4$ Kombinationen von \textit{low level input} (= 0) und \textit{high level input} (= 1).
     \item An dem \texttt{strobe} Eingang muss \textit{low level input} anliegen
 \end{enumerate}
