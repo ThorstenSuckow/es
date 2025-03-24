@@ -92,7 +92,60 @@ Die Schaltung für die Funktion $\neg A_3 \land \neg A_2 \land \neg A_1 \land A_
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.5]{aufgabe 3/img/schaltplan_parität.svg}
-    \caption{Schaltung für die Funktion $\neg A_3 \land \neg A_2 \land \neg A_1 \land A_0$ aus Aufgabe 3.3.  (Quelle: eigene)}
+    \includegraphics[scale=0.6]{aufgabe 3/img/schaltplan_parität.svg}
+    \caption{Schaltung für die Funktion $\neg A_3 \land \neg A_2 \land \neg A_1 \land A_0$ aus Aufgabe 3.3. Der Übersicht halber sind wieder mehrere Gatter zusammengefasst, wo angebracht. (Quelle: eigene)}
     \label{fig:schaltplan_parität}
+\end{figure}
+
+\section{Teil 4}
+
+\textit{Suchen Sie im Internet nach einem Datenblatt des SN74150 und stellen
+Sie fest,\\
+    (1) wie viele Eingänge der SN74150 besitzt,\\
+    (2) wie die Eingangspegel auf den Ausgang W übertragen werden und\\
+    (3) welche Bedeutung der Pin 9 (strobe) besitzt.
+}\\
+
+\noindent
+Laut dem Datenblatt des SN74150\footnote{
+Quelle: \url{https://www.alldatasheetde.com/datasheet-pdf/download/204647/TI/SN74150.html}, abgerufen 24.03.2025
+}
+
+\begin{enumerate}
+    \itemsep0.5em
+    \item hat der Multiplexer 16 Eingänge (E0 - E15)
+    \item werden die Eingangspegel $D, C, B, A$ auf den Ausgang $W$ übertragen, und der Wert entspricht dem Komplement des Signals, das an EN (N = $[0..15]$) anliegt. \\
+    Bspw. ist (informell) $(D = L) \land  (C = L) \land (B = L) \land (A = L) \implies \neg E0$, wobei $L$ für \textit{low level} steht.
+    Berücksichtigt wird hierbei noch der Pin 9, der für \ldots
+    \item \ldots \texttt{strobe} steht: ``[\ldots] a strobe input which must be at a low logic level to enable these devices``\footnote{
+    Zitat aus dem ang. Dokument
+    }.
+    Daraus lässt sich ableiten, das an dem Ping keine Spannung anliegen darf, damit die Adresseingänge $D, C, B, A$ die entsprechenden Inputs $E0..E15$ durchschalten können.
+\end{enumerate}
+
+\section{Teil 5}
+
+\textit{Wenn Sie den Multiplexer SN74150 zur Generierung eines (geraden)
+Paritätsbits einsetzen, tragen Sie bitte in die Abbildung ein, wie Sie\\
+(1) die Eingänge (Data Inputs),\\
+(2) die Adresseingänge (DCBA)\\
+(3) und den Strobe-Eingang beschalten würden.}\\
+
+\noindent
+Die Abbildung mit der vorgeschlagenen Beschaltung ist in Abbildung~\ref{fig:multiplexer} dargestellt.
+
+\begin{enumerate}
+    \itemsep0.5em
+    \item Die Eingänge $In_0, In_1, \ldots In_{15}$ ``entsprechen`` zeilenweise dem jeweiligen $y$ aus Tabelle~\ref{tab:paritätsbit} -
+    da die Eingänge allerdings negiert an $W$ ausgegeben werden, müssen diese \textit{negiert} als Eingaben angelegt werden, also
+     $In_i = \neg y_i$, mit $i \in [0..15]$ ($i$ ist Zeilenindex, also $i = (A_3 A_2 A_1 A_0)_2$).
+    \item An den Data Inputs $D, C, B, A$  liegen entsprechend die Werte für $A_3, A_2, A_1, A_0$ an (s. Tabelle~\ref{tab:paritätsbit}), also $2^4$ Kombinationen von \textit{low level input} (= 0) und \textit{high level input} (= 1).
+    \item An dem \texttt{strobe} Eingang muss \textit{low level input} anliegen
+\end{enumerate}
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{aufgabe 3/img/multiplexer.svg}
+    \caption{Schematische Darstellung der Beschaltung eines SN74150 Multiplexers zur Ausgabe eines Paritätsbits basierend auf Tabelle~\ref{tab:paritätsbit}. (Quelle: eigene, Pinbelegung aus Einsendeaufgaben 1, Abbildung 14)}
+    \label{fig:multiplexer}
 \end{figure}
