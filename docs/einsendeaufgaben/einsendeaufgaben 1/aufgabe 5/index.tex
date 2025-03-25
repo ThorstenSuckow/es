@@ -1,0 +1,18 @@
+\chapter{Aufgabe 5}
+
+\section{Teil 1}
+
+
+\textit{Wie heißt die Schaltung eines Schaltwerkes, das aus Eingangs- und
+Ausgangsschaltnetz und einem Speicher besteht (Folgezustände werden
+aus dem aktuellen Zustand und dem Eingangsschaltnetz ermittelt, die
+Ausgangsbelegung soll sich synchron zum Takt ändern)?}\\
+
+\noindent
+Es handelt sich wohl um das \textbf{taktzustandsgesteuerte RS-Flipflop} (\cite[65 f.]{ES1}), einem RS-Flipflop mit Torschaltung $C$ (\textit{Clock}), die nur dann Signale zum Flipflop durchlässt, wenn $C$ auf $1$ liegt.\\
+\textit{Bollenbacher und Liell} weisen darauf hin, dass in der Praxis \textit{flankengesteuerte} Flipflops bevorzugt werden, ``da sie nur zu einem \textit{genau definierten} Zeitpunkt (sehr kurze Zeit) die Eingangsinformation übernehmen `` (\textit{ebd.}, Hervorhebung i.O.).\\
+
+\noindent
+(Will man den illegalen Zustand $R=1, S=1$ verhindern, nutzt man \textit{D-Flipflops} als Erweiterung von RS-Flipflops. $R=1, S=1$ würde - grob gesagt - bedeuten, dass der Speicherinhalt dieser Kippstufe gleichzeitig \textit{gesetzt} und \textit{zurückgesetzt} wird - theoretisch ist dieser Zustand \textit{undefiniert}.
+D-Flipflops verhindern dies, indem es einen aktiven Eingang gibt, der negiert auf einen weiteren Eingang, geleitet wird - so kann nie gleichzeitig derselbe Eingangspegel anliegen.
+Zusätzlich besitzt der D-Flipflop noch eine Torschaltung $C$, die die Weitergabe des Eingangssignals steuert (vgl.~\cite[69]{ES1} sowie .~\cite[69]{ES1}, wo D-Flipflops für den Aufbau eines synchronen Schaltwerks genutzt werden).
