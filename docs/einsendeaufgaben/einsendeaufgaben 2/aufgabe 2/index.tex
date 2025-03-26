@@ -1,0 +1,51 @@
+\chapter{Aufgabe 2}
+
+\section{a)}
+
+Sei der folgende Programmcode in (C) gegeben:
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{c}
+    int ret, status;
+    ret = fork();
+
+    if (ret == 0) {
+        printf("K1\n");
+        exit(0);
+    } else {
+        printf("E1\n");
+        wait(&status);
+        printf("E2\n");
+        exit(0);
+    }
+\end{minted}\\
+
+
+
+\begin{itemize}
+    \itemsep0.5em
+    \item \textbf{F:} Was bedeuten wohl die Buchstaben ``K`` und ``E`` in den Ausgabeanweisungen?
+    \item \textbf{A:} \textit{K} und \textit{E} beziehen sich in den Ausgabeanweisungen als Hinweis darauf, welcher von dem Programm ausgelöste Prozess gerade ausgeführt wird: Ist \texttt{ret == 0} (als Rückgabewert von \code{fork()}\footnote{
+        \url{https://man7.org/linux/man-pages/man2/fork.2.html}, abgerufen 26.03.2025
+    }), dann befindet sich die Ausführung in dem von dem \textbf{E}lternprozess gestarteten \textbf{K}indprozess
+    \item[]
+    \item \textbf{F:} Was ist der grundlegende Zweck der \texttt{if‐else}‐Anweisung?
+    \item \textbf{A:} der Zweck ist es, in einem Programm zwei verschiedene Ausführungszweige für den \textbf{E}lternprozess und den \textbf{K}indprozess zu implementieren.
+    Dadurch ist es bspw. auch möglich, in dem Programm eine Routine zur IPC (\textit{Inter-Process-Communication}) zwischen den Prozessen unterzubringen, was \textit{Mandl} in~\cite[180 f.]{Man20g} anhand von \textit{Pipes} demonstriert.
+    \item[]
+    \item \textbf{F:} Wird ``E2`` immer vor oder immer nach ``K1`` ausgegeben? Begründung!
+    \item \textbf{A:} \textit{E2} wird immer \textbf{nach} \textit{K1} ausgegeben, da der Elternprozess vorher den \textbf{Systemaufruf} \code{wait()} durchführt:
+    \blockquote[{\url{https://man7.org/linux/man-pages/man2/wait.2.html}, abgerufen 26.03.2025}]{
+        ``The wait() system call suspends execution of the calling thread
+        until one of its children terminates.``
+    }\\
+    \noindent
+    In dem Programm wird der Methode außerdem noch eine Referenz auf die Speicherstelle übergeben, die den Integer-Wert für die Variable \code{status} vorhält: Sobald der Kindprozess beendet wurde, enthält  \code{status} eine Bitmaske, die verschiedene Informationen über die Ausführung des Kindprozesses beinhaltet (normal abgebrochen, durch Signal abgebrochen usw.)
+    \item[]
+    \item \textbf{F:} Lässt sich eine ähnliche Aussage für ``E1`` und ``K1`` treffen? Begründung!
+    \item \textbf{A:} Es lässt sich für den allgemeinen Fall keine ähnliche Aussage treffen, da an dieser Stelle das Prozess-Scheduling des Betriebssystems greift. Es kann in manchen Fällen sein, das ``K1`` vor ``E1`` ausgegeben wird. Es gilt aber genauso andersrum.\\
+    Als Anmerkung: Problematisch ist in solchen Fällen das komplette Auslassen von \code{wait()}\footnote{was durchaus auch durch fehlerhafte Programmierung geschehen kann} - würde bspw. in dem Programm der Aufruf zu \code{wait()} fehlen, ist es durchaus möglich, dass die CPU dem Elternprozess die CPU-Zeit zuweist, dieser durchläuft, sich beendet und im Anschluss der Kindprozess ausgeführt wird - ohne zugehörigen Elternprozess. In diesem Fall verwaisen die Kindprozesse, und werden als Zombi-Prozessen dem ``Ur-Prozess`` zugeordnet (vgl.~\cite[94 f.]{Man20e}])
+\end{itemize}
