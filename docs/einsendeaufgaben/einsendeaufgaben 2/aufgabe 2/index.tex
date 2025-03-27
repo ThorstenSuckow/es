@@ -2,7 +2,7 @@
 
 \section{a)}
 
-Sei der folgende Programmcode in (C) gegeben:
+Sei der folgende Programmcode in C gegeben:
 
 \begin{minted}[mathescape,
     numbersep=5pt,
@@ -49,3 +49,149 @@ Sei der folgende Programmcode in (C) gegeben:
     \item \textbf{A:} Es lässt sich für den allgemeinen Fall keine ähnliche Aussage treffen, da an dieser Stelle das Prozess-Scheduling des Betriebssystems greift. Es kann in manchen Fällen sein, das ``K1`` vor ``E1`` ausgegeben wird. Es gilt aber genauso andersrum.\\
     Als Anmerkung: Problematisch ist in solchen Fällen das komplette Auslassen von \code{wait()}\footnote{was durchaus auch durch fehlerhafte Programmierung geschehen kann} - würde bspw. in dem Programm der Aufruf zu \code{wait()} fehlen, ist es durchaus möglich, dass die CPU dem Elternprozess die CPU-Zeit zuweist, dieser durchläuft, sich beendet und im Anschluss der Kindprozess ausgeführt wird - ohne zugehörigen Elternprozess. In diesem Fall verwaisen die Kindprozesse, und werden als Zombi-Prozessen dem ``Ur-Prozess`` zugeordnet (vgl.~\cite[94 f.]{Man20e}])
 \end{itemize}
+
+
+\section{b)}
+
+Sei der folgende Programmcode in C gegeben:
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{c}
+    int ret;
+    ret = fork();
+
+    if (ret == 0) {
+        printf("Meine PID ist %d\n", ret);
+        exit(0);
+    } else {
+        printf("Die PID meines Kinds ist %d\n", ret);
+        exit(0);
+    }
+\end{minted}\\
+
+\noindent
+Wir können folgendes feststellen:
+
+\begin{itemize}
+    \itemsep0.5em
+    \item \code{printf()} Kindprozess: Die Ausgabe der PID des Kindprozesses ist \textbf{nicht korrekt}.
+    \code{ret} wird \code{0} zugewiesen, weshalb die Ausgabe nicht die tatsächliche Prozess-ID des Kindprozesses enthält.\\
+    An dieser Stelle müsste die Funktion \code{getpid()}\footnote{
+\url{https://man7.org/linux/man-pages/man2/getpid.2.html}, abgerufen 27.03.2025
+    } verwendet werden.
+    \item \code{printf()} Elternprozess: Die printf-Ausgabe des Elternprozess ist \textbf{bzgl. der gewünschten Ausgabe} korrekt.
+    Allerdings sollte \code{wait()} verwendet werden, damit der Elternprozess auf die Beendigung des Kindprozesses wartet und der Kindprozess korrekt terminieren kann.
+\end{itemize}
+
+\noindent
+Der erweiterte Code zur korrekten Ausgabe der Prozess-IDs lautet (als kompilierfähiges C-Programm) wie folgt:
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{c}
+    #include <stdlib.h>
+    #include <stdio.h>
+    #include <unistd.h>
+    #include <sys/wait.h>
+
+    void main() {
+
+        int status;
+        int ret = fork();
+
+        if (ret == 0) {
+            printf("K: Meine PID ist %d\n", getpid());
+            printf("   Meine Parent-PID ist %d\n", getppid());
+            exit(0);
+        } else {
+            wait(&status);
+            printf("E: Meine PID ist %d\n", getpid());
+            printf("   Die PID meines Kindprozesses ist %d\n", ret);
+            exit(0);
+        }
+    }
+\end{minted}\\
+
+
+\section{c)}
+Sei der folgende Programmcode in Java gegeben:
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+    class MyThread extends Runnable {
+
+        public void run() {
+            System.out.println("Hier ist der Thread.");
+            System.out.println(
+                "Ich werde nebenläufig zum Thread des Hauptprogramms ausgeführt."
+            );
+        }
+
+    }
+\end{minted}\\
+
+\noindent
+Das Hauptprogramm beinhaltet folgende Zeilen:
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+    MyThread thr = new MyThread();
+    thr.run();
+\end{minted}\\
+
+\noindent
+Wir können folgendes feststellen:
+
+\begin{itemize}
+    \itemsep0.5em
+    \item Die Klasse \code{MyThread} ist falsch implementiert: \code{Runnable} ist eine Schnittstelle.
+    Entweder muss \code{MyThread} von \code{java.lang.Thread} erben, oder der Klassenheader muss umgeschrieben werden zu
+    \item[] \begin{center}\code{class MyThread implements Runnable}\end{center}
+    \item Nach dieser Korrektur ist der gegebene Code-Ausschnitt in der \code{main()} (weiterhin) syntaktisch korrekt, aber \textit{semantisch irreführend}: Durch den Methodenaufruf wird nicht implizit ein neuer Thread erstellt, sondern einfach nur im \textit{main}-Thread\footnote{
+    ``the thread that typically calls the application's main method``, \url{https://download.java.net/java/early_access/loom/docs/api/java.base/java/lang/Thread.html}, abgerufen 27.03.2025
+    } des Programms die Anweisungen ausgeführt.\\
+    Damit die Anweisungen in \code{run()} der Klasse \code{MyThread} tatsächlich in einem nebenläufigen Thread ausgeführt werden, müsste der Code wie folgt umgeschrieben werden\footnote{unter der Annahme, dass mindestens eine aktuelle Java-Version - wie bspw. 21 - verwendet wird}:
+\end{itemize}
+
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+    class MyThread implements Runnable {
+       ...
+    }
+
+    Thread thr = new Thread(new MyThread());
+    thr.start();
+\end{minted}\\
+
+\vspace{5mm}
+
+\noindent
+Um einen weiteren Thread zu erzeugen, der genau die gleichen Anweisungen ausführt, kann die main-Methode des Programms wie folgt ergänzt werden:
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+
+    Thread thr = new Thread(new MyThread());
+    Thread t2  = new Thread(new MyThread());
+
+    thr.start();
+    t2.start();
+\end{minted}\\
