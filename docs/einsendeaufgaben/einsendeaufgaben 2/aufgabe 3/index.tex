@@ -1,0 +1,178 @@
+\chapter{Aufgabe 3}
+
+\section{a)}
+
+Gegeben ist die folgende Klassendefinition:
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+
+    class PositivZaehler {
+        private int wert;
+
+        PositivZaehler(int initwert) {
+            if (initwert>=0)
+                wert = initwert;
+            else wert = 0;
+        }
+
+        public void up() {
+            wert++;
+        }
+
+        public void down() {
+            if (wert>0)
+                wert--;
+        }
+    }
+
+\end{minted}\\
+
+\vspace{5mm}
+
+\noindent
+Angenommen
+
+\begin{itemize}
+    \itemsep0.5em
+    \item \code{wert} wird im Konstruktor beliebig initialisiert
+    \item der Zähler wird von zwei Threads $T_1$ und $T_2$ verwendet
+    \item $T_1$ und $T_2$ wollen zeitgleich \code{up()} aufrufen, um jeweils den Zähler um $1$ zu erhöhen
+\end{itemize}
+
+\noindent
+Dann wird es sehr wahrscheinlich aufgrund der \textit{nicht thread-sicheren} Implementierung zu einer \textit{Race Condition} kommen, so dass ein \textbf{Lost-Update}-Problem entsteht.
+Dies soll im Folgenden vereinfacht dargesteltl werden:
+
+\begin{equation}\notag
+    \begin{alignat}{3}
+        & \qquad T_1             &&\qquad T_2 \\
+        &x \coloneq wert; \ &&\\
+        &                &&  y \coloneq wert; \\
+        &  x \coloneq x + 1; \ && \\
+        &wert \coloneq x; \  &&\\
+        &                   && y \coloneq y + 1;\\
+        &                   && wert \coloneq y;
+    \end{alignat}
+\end{equation}
+
+\noindent
+$T_1$ und $T_2$ überschneiden sich hier zeitlich so, dass sie bereits auf demselben Wert von \code{wert} \textit{operieren}, gegenseitige Änderungen also nicht berücksichtigt.
+Die elementaren Operationen für das Inkrementieren des Wertes werden außerdem nachfolgend \textit{verzahnt} aufgerufen, so dass der von $T_1$ gesetzte Wert nachträglich von $T_2$ überschrieben wird. \\
+Da die Implementierung von \code{up()} eigentlich einen \textit{kritischen Bereich} darstellt, müssten die Methodenaufrufe \textit{sequentiell} erfolgen:
+
+\begin{equation}\notag
+\begin{alignat}{3}
+    & \qquad T_1             &&\qquad T_2 \\
+    &x \coloneq wert; \ &&\\
+    &  x \coloneq x + 1; \ && \\
+    &wert \coloneq x; \  &&\\
+    &                &&  y \coloneq wert; \\
+    &                   && y \coloneq y + 1;\\
+    &                   && wert \coloneq y;
+\end{alignat}
+\end{equation}\\
+
+\noindent
+Damit die Methoden in Java \textbf{threadsafe} sind, müsste sowohl \code{up()} als auch \code{down()} mit dem Schlüsselwort \code{synchronized}\footnote{
+    \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.4.3.6}, abgerufen 27.03.2025
+} als \textit{synchronisierte} Methoden deklariert werden.
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+    public synchronized void up() {
+        wert++;
+    }
+
+    public synchronized void down() {
+        if (wert>0)
+            wert--;
+    }
+\end{minted}\\
+
+\vspace{5mm}
+
+\noindent
+In Java wird die \textit{Synchronisierung} über das \textbf{Monitor}-Konzept realisiert\footnote{
+``The Java programming language provides multiple mechanisms for communicating between threads. The most basic of these methods is synchronization, which is implemented using monitors. Each object in Java is associated with a monitor, which a thread can lock or unlock.`` (\url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html#jls-17.1}, abgerufen 27.03.2025)
+}, weshalb man die so synchronisierten Objekte auch \textit{Monitore}\footnote{
+\textit{monitor} (lat.): Mahner, Überwacher
+} bezeichnet:
+
+\blockquote[{\cite[155]{Man20g}}]{
+``Unter einem Monitor versteht man eine Menge von Prozeduren und Datenstrukturen,
+    die als Betriebsmittel betrachtet werden und mehreren Prozessen zugänglich sind, aber nur
+    von einem Prozess zu einer Zeit benutzt werden können. Anders ausgedrückt ist ein Monitor ein Objekt (im Sinne der objektorientierten Programmierung), das den Zugriff auf
+    gemeinsam genutzte Daten über kritische Bereiche in Zugriffsmethoden realisiert.``
+}
+
+\section{b)}
+
+\textit{Mandl} zeigt in \cite[170 f.]{Man20g} eine vereinfachte Semaphor-Implementierung.\\
+Diese wird nun anstelle der wie o.a. \code{synchronized}-Deklaration für die Aufrufe der Methoden \code{up()}/\code{down()} genutzt.
+Kommentare im Quelltext erläutern die Verwendung des Semaphors.
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+
+    class PositivZaehler {
+        private int wert;
+
+        private Sema s;
+
+        PositivZaehler(int initwert) {
+            // nur jeweils ein Thread darf sich
+            // im kritischen Bereich befinden
+            s = new Sema(1);
+
+            if (initwert>=0)
+                wert = initwert;
+            else wert = 0;
+        }
+
+        public void up() {
+            // kritischen Bereich sperren - ankommende
+            // Threads müssen ggf. in die Warteschlange
+            s.p();
+
+            // kritischer Bereich
+            wert++;
+
+            // kritischen Bereich freigeben und verlassen
+            s.v();
+        }
+
+        public void down() {
+            // sperren - s. up()
+            s.p();
+
+            // kritischer Bereich
+            if (wert>0)
+                wert--;
+
+            // freigeben
+            s.v();
+        }
+    }
+\end{minted}\\
+
+\vspace{5mm}
+
+\noindent
+\textit{Was ist der Vorteil, die Synchronisation wie in a) zu realisieren, also nicht mit
+Semaphoren?}\\
+
+\noindent
+Ein Vorteil, \code{synchronized} direkt zu verwenden, also die \textit{Sprachfeatures} von Java zum Umsetzen von Synchronisationskonzepten zu nutzen, liegt sicherlich in der Klarheit und Einfachheit, mit der der Code - basierend auf einigen wenigen Schlüsselwörtern - angepasst und strukturiert werden kann. Die Verwaltung der Sperren wird außerdem von der Runtime übernommen; andere Entwickler sehen an der Methodendeklaration direkt, wo ein kritischer Bereich umgesetzt wird.\\
+Es muss zudem nicht die Methodenimplementierung für anderweitige Bibliotheksaufrufe angepasst werden, und ggf. entfällt hierdurch die Einarbeitung von Entwicklern in Semaphor-Code, die mühsam ausfallen kann, da darunterliegende Konzepte durch ein niedriges Abstraktionsniveau verhätnismäßig komplex ausfallen können\footnote{
+\textit{Mandl} weist gleichzeitig  auf Kritik an dem von Java umgesetzten Monitor-Konzept hin (vgl.~\cite[162]{Man20g}): Von \textit{Hansen} wurde bemängelt, dass sie nicht korrekt seien und Java an der Stelle insg. gegen Grundprinzipien verstoßen würde: ``[\ldots] parallel threads can access shared variables, either directly or indirectly, without any synchronization. One can, in fact, write a Java class that uses both private and public variables accessed by both synchronized and unsynchronized methods.`` (\cite[42]{Han99})
+}.
