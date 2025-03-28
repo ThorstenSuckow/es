@@ -1,0 +1,78 @@
+\chapter{Aufgabe 4}
+
+
+\section{a)}
+\noindent
+Der Lösungsvorschlag ist in Tabelle~\ref{tab:adresszuordnung_a} angegeben.\\
+Die reale physische Adresse berechnet sich dabei nach der Formel
+
+\begin{equation}\notag
+    A_{\text{real}} = A_{\text{phys}} + (A_{\text{virt}} \ \text{MOD} \ S_{\text{B}})
+\end{equation}
+
+\noindent
+wobei $S_{\text{B}}$ für die Seitengröße (in Bytes) und $A_{\text{phys}}$ für die Startadresse der zugeordneten Seite im physischen Speicher steht.
+
+\begin{table}[h!]
+    \setlength{\tabcolsep}{0.5em}
+    \def\arraystretch{1.5}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        $A_{\text{virt}}$ & Virtuelle Seite              & $A_{\text{phys}}$ &  Offset (virt.) & $A_{\text{real}}$\\
+        \hline
+        0     & $\lfloor \frac{0}{4096} \rfloor$ = 0      & 24576 & 0 \% 4096     = 0     & 24576 \\
+        \hline
+        12288 & $\lfloor \frac{12288}{4096} \rfloor$ = 3  & 8192     & 12288 \% 4096 = 0     & 8192 \\
+        \hline
+        14500  & $\lfloor \frac{14500}{4096} \rfloor$ = 3 & 8192 & 14500 \% 4096 = 2212   & 10404 \\
+        \hline
+        22000  & $\lfloor \frac{22000}{4096} \rfloor$ = 5 & -    & 22000 \% 4096 = 1520   & \textit{Plattenblock 2}  \\
+        \hline
+        9100   & $\lfloor \frac{9100}{4096} \rfloor$ = 2  & 0    & 9100 \% 4096 = 908     & 908\\
+        \hline
+        26758  & $\lfloor \frac{26758}{4096} \rfloor$ = 6 & 4096 & 26758 \% 4096 = 2182   & 6278 \\
+        \hline
+    \end{tabular}
+    \caption{Zuordnung virtueller Adressen zu Hauptspeicheradressen für Aufgabe 4 a). ``\%`` repräsentiert den MODULO-Operator. }
+    \label{tab:adresszuordnung_a}
+\end{table}
+
+
+\section{b)}
+Der Inhalt der virtuellen Seite $3$ wird in dem Sekundärspeicher auf Plattenblock 17 ausgelagert.\\
+Die virtuelle Seite $5$ bekommt nun den Primärspeicher beginnend ab Adresse 8192 zugeordnet.\\
+Damit ändert sich die Tabelle wie in  Tabelle~\ref{tab:adresszuordnung_b} angegeben.
+
+\begin{table}[h!]
+    \setlength{\tabcolsep}{0.5em}
+    \def\arraystretch{1.5}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        $A_{\text{virt}}$ & Virtuelle Seite              & $A_{\text{phys}}$ &  Offset (virt.) & $A_{\text{real}}$\\
+        \hline
+        0     & $\lfloor \frac{0}{4096} \rfloor$ = 0      & 24576 & 0 \% 4096     = 0     & 24576 \\
+        \hline
+        12288 & $\lfloor \frac{12288}{4096} \rfloor$ = 3  & -     & 12288 \% 4096 = 0     & \textit{Plattenblock 17} \\
+        \hline
+        14500  & $\lfloor \frac{14500}{4096} \rfloor$ = 3 & - & 14500 \% 4096 = 2212   & \textit{Plattenblock 17} \\
+        \hline
+        22000  & $\lfloor \frac{22000}{4096} \rfloor$ = 5 & 8192    & 22000 \% 4096 = 1520   & 9712  \\
+        \hline
+        9100   & $\lfloor \frac{9100}{4096} \rfloor$ = 2  & 0    & 9100 \% 4096 = 908     & 908\\
+        \hline
+        26758  & $\lfloor \frac{26758}{4096} \rfloor$ = 6 & 4096 & 26758 \% 4096 = 2182   & 6278 \\
+        \hline
+    \end{tabular}
+    \caption{Zuordnung virtueller Adressen zu Hauptspeicheradressen für Aufgabe 4 b). }
+    \label{tab:adresszuordnung_b}
+\end{table}
+
+\section{c)}
+
+Die Seitentabelle ist nicht zulässig, da die Seitengröße 4KiB beträgt - also muss jeder Seitenbereich, der durch reale Adressen in der Seitentabelle repräsentiert wird, mit einem vielfachen von 4096 Bytes beginnen.
+Der abgebildete Speicherbereich mit 10K-14K erfüllt diese Bedingung nicht.
+Zudem überschneidet sich der Eintrag mit dem Speicherbereich 8K-12K - hier würden zwei verschiedene virtuelle Seiten auf ein und dieselbe reale physische Seite verweisen (oder einen Bereich davon).
+Handelt es sich bei der geg. Seitentabelle um die eines einzelnen Prozesses, hätte dies das unerwünschte Überschreiben von Adressinhalten zur Folge.\\
+Anzumerken ist hierbei jedoch, das durchaus mehrere virtuelle Seiten verschiedener Prozesse auf ein und dieselbe physische Seite abgebildet werden dürfen, bspw. zur Umsetzung von \textit{Shared Memory} (vgl.~\cite[\textbf{Abb. 7.38}, 226]{Man20h}).
