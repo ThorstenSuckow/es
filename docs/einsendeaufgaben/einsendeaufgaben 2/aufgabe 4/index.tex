@@ -74,5 +74,6 @@ Damit ändert sich die Tabelle wie in  Tabelle~\ref{tab:adresszuordnung_b} angeg
 Die Seitentabelle ist nicht zulässig, da die Seitengröße 4KiB beträgt - also muss jeder Seitenbereich, der durch reale Adressen in der Seitentabelle repräsentiert wird, mit einem vielfachen von 4096 Bytes beginnen.
 Der abgebildete Speicherbereich mit 10K-14K erfüllt diese Bedingung nicht.
 Zudem überschneidet sich der Eintrag mit dem Speicherbereich 8K-12K - hier würden zwei verschiedene virtuelle Seiten auf ein und dieselbe reale physische Seite verweisen (oder einen Bereich davon).
-Handelt es sich bei der geg. Seitentabelle um die eines einzelnen Prozesses, hätte dies das unerwünschte Überschreiben von Adressinhalten zur Folge.\\
-Anzumerken ist hierbei jedoch, das durchaus mehrere virtuelle Seiten verschiedener Prozesse auf ein und dieselbe physische Seite abgebildet werden dürfen, bspw. zur Umsetzung von \textit{Shared Memory} (vgl.~\cite[\textbf{Abb. 7.38}, 226]{Man20h}).
+Anzumerken ist hierbei jedoch, das durchaus mehrere virtuelle Seiten auf ein und dieselbe physische Seite abgebildet werden dürfen, bspw. zur Umsetzung von \textit{Shared Memory} (vgl.~\cite[\textbf{Abb. 7.38}, 226]{Man20h})\footnote{
+s. auch ``Aliasing``, \url{https://en.wikipedia.org/wiki/CPU_cache#Virtual_aliasing}, abgerufen 28.03.2025
+}.
