@@ -1,0 +1,92 @@
+\chapter{Aufgabe 5}
+
+\noindent
+Der Lösungsvorschlag zu der Aufgabe ist in den Tabellen~\ref{tab:zugriff_fifo} sowie~\ref{tab:zugriff_lru} dargestellt.
+Positionen bzw. Positionswechsel der Seiten sind nicht repräsentativ für das Verhalten des Speichers, ausgenommen der Darstellung der Seitenersetzung.
+
+\noindent
+Für die Anzahl der \textit{Page Faults} und \textit{Seitenersetzungen} ergibt sich jeweils:
+
+\begin{itemize}
+    \itemsep0.5em
+    \item \textbf{FIFO}
+    \item[] Page Faults: 8 ; Seitenersetzungen: 4
+    \item \textbf{LRU}:
+    \item[] Page Faults: 6 ; Seitenersetzungen: 2
+\end{itemize}
+
+\noindent
+Zu beachten ist die Definition eines \textit{Page Faults}:
+\blockquote[{\cite[198 f., Hervorhebung i.O.]{Man20h}}]{
+``Ein \textit{page fault}  (Seitenfehler) ist also ein Trap [\ldots], den die MMU [Anm.: Memory Management Unit] erzeugt, wenn von einem Prozess eine virtuelle Adresse angesprochen wird, die nicht im Hauptspeicher geladen ist.``
+}\\
+
+\noindent
+Demnach ist bereits der erste Zugriff auf die geg. virt. Seiten als \textit{Page Fault} zu werten, da der Hauptspeicher zu Beginn \textit{leer} ist.
+
+\begin{table}[h!]
+    \setlength{\tabcolsep}{0.6em}
+    \def\arraystretch{1.5}
+    \centering
+    \begin{tabular}{|c|*{11}{c|}}
+        \hline
+        \textbf{Zugriff} & \textbf{1} & \textbf{2} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{2} & \textbf{1} & \textbf{5} & \textbf{6} & \textbf{2} & \textbf{1} \\
+        \hline
+        \multirow{\textbf{Hauptspeicher}}
+        &  1_E & 1    & 1 & 1   & 1   & 1 & 1 & 2     & 3     & 4      & 5   \\
+        \cline{2-12}
+        &      & 2_E  & 2 & 2   & 2   & 2 & 2 & 3     & 4     & 5      & 6   \\
+        \cline{2-12}
+        &      &      &   & 3_E & 3   & 3 & 3 & 4     & 5     & 6      & 2 \\
+        \cline{2-12}
+        &      &      &   &     & 4_E & 4 & 4 & 5_E^R & 6_E^R & 2_E^R  & 1^R_E \\
+        \hline
+    \end{tabular}
+    \caption{Ersetzungsverfahren für Aufgabe 5 nach \textbf{FIFO}: Es stehen 4 Seitenrahmen im Hauptspeicher zur Verfügung.
+    Ein hochgestelltes $R$ bezeichnet eine Seitenersetzung, ein tiefgestelltes $E$ einen \textit{Page Fault}.}
+    \label{tab:zugriff_fifo}
+\end{table}
+
+\begin{table}[h!]
+    \setlength{\tabcolsep}{0.6em}
+    \def\arraystretch{1.5}
+    \centering
+    \begin{tabular}{|c|*{11}{c|}}
+        \hline
+        \textbf{Zugriff} & \textbf{1} & \textbf{2} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{2} & \textbf{1} & \textbf{5} & \textbf{6} & \textbf{2} & \textbf{1} \\
+        \hline
+        \multirow{\textbf{Hauptspeicher}}
+        &  1_E & 1    & 1 & 1   & 1   & 1 & 1 & 1     & 1     & 1      & 1   \\
+        \cline{2-12}
+        &      & 2_E  & 2 & 2   & 2   & 2 & 2 & 2     & 2     & 2      & 2   \\
+        \cline{2-12}
+        &      &      &   & 3_E & 3   & 3 & 3 & 5_E^R & 5     & 5      & 5 \\
+        \cline{2-12}
+        &      &      &   &     & 4_E & 4 & 4 & 4     & 6_E^R & 6      & 6 \\
+        \hline
+    \end{tabular}
+    \caption{Ersetzungsverfahren für Aufgabe 5 nach \textbf{LRU}. Notation wie in Tabelle~\ref{tab:zugriff_fifo}.}
+    \label{tab:zugriff_lru}
+\end{table}
+
+\clearpage
+\section{d)}
+
+Sei folgender Seitenzugriff gegeben:
+
+\begin{equation}\notag
+    1 \ 2 \ 3 \ 1 \ 2\ 3 \ 2 \ 2 \ 3
+\end{equation}
+
+\noindent
+Sei $t^d$ der Zeitpunkt des letzten Zugriffs. Dann ergeben sich für die Distanzen $d \in \{2, 4, 6\}$ jeweils die folgenden \textit{Working Sets} (\textit{WS})$\footnote{
+\textit{Working-Set-Modell}: s.~\cite[214 ff.]{Man20h}
+}:
+
+\begin{equation}\notag
+    \begin{split}
+        \text{WS}(t^2) &= \{2, 3\} \\
+        \text{WS}(t^4) &= \{2, 3\} \\
+        \text{WS}(t^6) &= \{1, 2, 3\} \\
+    \end{split}
+\end{equation}
