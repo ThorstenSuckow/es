@@ -1,0 +1,31 @@
+#!/bin/bash
+
+MODULE=PrtDrvr
+DEVICE=PrtDrvr
+
+# Treiber entladen
+sudo rmmod $MODULE 2>/dev/null
+
+# Treiber laden
+sudo insmod $MODULE.ko || { echo "Fehler beim Laden von $MODULE.ko"; exit 1; }
+
+# Major-Nummer aus /proc/devices auslesen
+MAJOR=$(grep $MODULE /proc/devices | awk '{print $1}')
+
+if [ -z "$MAJOR" ]; then
+    echo "Fehler: Konnte Major-Nummer für $MODULE nicht finden"
+    exit 1
+fi
+
+echo "Gefundene Major-Nummer: $MAJOR"
+
+# Alte Gerätedatei löschen (falls vorhanden)
+sudo rm -f /dev/$DEVICE
+
+# Neue Gerätedatei erstellen
+sudo mknod /dev/$DEVICE c $MAJOR 0 || { echo "Fehler bei mknod"; exit 1; }
+
+# Rechte setzen
+sudo chmod 666 /dev/$DEVICE
+
+echo "Driver $MODULE loaded. Device /dev/$DEVICE ready (Major $MAJOR)"
