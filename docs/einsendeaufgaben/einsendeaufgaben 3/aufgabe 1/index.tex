@@ -1,0 +1,144 @@
+\chapter{Aufgabe 1}
+
+\textit{Schreiben Sie einen Treiber \texttt{PrtDrvr}, der lediglich eine \texttt{write}-Funktion implementiert.
+Wenn ein Prozess auf diesen Treiber schreibt, dann sollen in der Datei \texttt{/var/log/system.log} folgende Informationen ausgegeben werden:
+\begin{enumerate}
+    \itemsep0.5em
+    \item Der Name, die PID und die auf die Boot-Zeit bezogene Laufzeit des
+    aufrufenden Prozesses.
+    \item Der Name, die PID und die auf die Boot-Zeit bezogene Laufzeit aller
+    Elternprozesse des aufrufenden Prozesses.
+    \item Der Name und die auf die Boot-Zeit bezogene Laufzeit des Prozesses
+    mit der PID 1.
+\end{enumerate}
+}
+
+\section{Implementierung}
+
+Nachfolgend ist der C-Code angegeben.\\
+Entwickelt und getestet auf der von der Kurseinheit bereitgestellten VM\footnote{
+\texttt{uname -a: Linux hbo-VirtualBox 5.4.0-91-generic #102-Ubuntu SMP Fri Nov 5 16:31:28 UTC 2021 x86\_64 x86\_64 x86\_64 GNU/Linux}
+}
+Bei der Implementierung stützen wir uns überwiegend auf die Ausführungen in~\cite[91 f. und 95 f.]{ES3}
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm,
+    fontsize=\small]{c}
+    #include <linux/module.h>
+    #include <linux/version.h>
+    #include <linux/proc_fs.h>
+
+    #define LICENSE "GPL"
+    #define DRIVER_AUTHOR "Thorsten Suckow-Homberg <thorsten@suckow-homberg.de>"
+    #define DRIVER_NAME  "PrtDrvr"
+
+    MODULE_LICENSE(LICENSE);
+    MODULE_AUTHOR(DRIVER_AUTHOR);
+
+    static unsigned int prtdrvr_major = 0;
+
+    ssize_t prtdrvr_write(struct file *filp, const char *buf, size_t count, loff_t *t) {
+
+        int i = 1;
+        struct task_struct *parent = current->real_parent;
+
+        printk(KERN_INFO "%s_write called. Here's the required  information according to ES3.1:\n"
+                         "1. [caller]: %s; PID: %d; start-time: %llu\n",
+            DRIVER_NAME,
+            current->comm, current->pid, current->real_start_time
+        );
+
+
+        while (true) {
+            pid_t pid = parent->pid;
+
+            if (pid == 1) {
+                printk(
+                    KERN_INFO "3.[systemd] found %s; PID: %d; start-time: %llu\n",
+                    parent->comm, pid, parent->real_start_time
+                );
+                printk(KERN_INFO "(omitting IDLE/SWAPPER. Done!)");
+
+                break;
+            } else {
+                printk(
+                    KERN_INFO "    2.%d [parent] %s; PID: %d; start-time: %llu\n",
+                    i, parent->comm, pid, parent->real_start_time
+                );
+            }
+
+            parent = parent->real_parent;
+            i++;
+        }
+
+        return count;
+    }
+
+    struct file_operations prtdrvr_fops = {
+        .owner   = THIS_MODULE,
+        .write   = prtdrvr_write
+    };
+
+    int init_module() {
+        int result = register_chrdev(prtdrvr_major, DRIVER_NAME, &prtdrvr_fops);
+
+        if (result < 0) {
+            return result;
+        }
+
+        // assign major number from kernel
+        if (prtdrvr_major == 0) {
+            prtdrvr_major = result;
+        }
+
+        // newlines help with flushing ob
+        printk(KERN_INFO "%s@%d driver loaded\n", DRIVER_NAME, prtdrvr_major);
+        return 0;
+    }
+
+    void cleanup_module() {
+        unregister_chrdev(prtdrvr_major, DRIVER_NAME);
+        printk(KERN_INFO "%s@%d driver unloaded. Bybebye!\n", DRIVER_NAME, prtdrvr_major);
+        return;
+    }
+\end{minted}\\
+
+
+\section{Test}
+
+\noindent
+Getestet wurde der Treiber über die Kommandozeile mit
+
+\begin{center}
+\texttt{
+dd of=/dev/PrtDrvr if=input
+}
+\end{center}
+
+\noindent
+wobei \texttt{input} eine Datei mit wenigen Bytes Inhalt ist:
+Der Input wird an die Device-Datei \texttt{/dev/PrtDrvr} übergeben und dort mittels \texttt{write} verarbeitet.
+
+
+\section{Ausgabe}
+Exemplarisch eine Ausgabe aus \textt{var/log/syslog} nach dem Aufruf von
+
+\begin{center}
+    \texttt{dd of=/dev/PrtDrvr if=input}\footnote{
+der Übersicht halber um einige Informationen aus \texttt{KERN\_INFO} gekürzt.
+}
+\end{center}
+Die Ausgaben wurden zur einfacheren Zuordnung zu den Aufgabenteilen nummeriert.\\
+
+
+\noindent
+\texttt{kernel: [ 1737.483839] PrtDrvr\_write called. Here's the required  information according to ES3.1:\\
+kernel: [ 1737.483839] 1. [caller]: dd; PID: 7602; start-time: 1738292206050\\
+kernel: [ 1737.483840]     2.1 [parent] bash; PID: 1763; start-time: 49145654871\\
+kernel: [ 1737.483841]     2.2 [parent] gnome-terminal-; PID: 1724; start-time: 45966569883\\
+kernel: [ 1737.483842]     2.3 [parent] systemd; PID: 1006; start-time: 20789307747\\
+kernel: [ 1737.483842] 3.[systemd] found systemd; PID: 1; start-time: 852230997\\
+}
