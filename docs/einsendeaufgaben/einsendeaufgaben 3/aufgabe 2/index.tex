@@ -46,7 +46,7 @@ Quelle:\url{https://elixir.bootlin.com/linux/v2.6.38.8/source/kernel/irq/manage.
 \end{minted}
 
 \noindent
-Wie in der Methode dokumentiert, erfragt die Methode, ob der gegebene \textbf{IRQ}\footnote{s.a.~\cite[52]{Man20d}} von einem Gerät/Gerätetreiber angefordert werden kann: Die Methode ermittelt zu dem übergebenen Argument \code{uint irq} mittels \texttt{irq\_get\_desc\_lock} einen Eintrag vom Typ \code{struct irq_desc} (s.a.~\cite[64 f.]{Man20d}) und setzt gleichzeitig eine Spinlock-Sperre\footnote{
+Wie im Quellcode dokumentiert wird über die Methode ein \textbf{IRQ}\footnote{s.a.~\cite[52]{Man20d}} von einem Gerät/Gerätetreiber angefordert: Die Methode ermittelt zu dem übergebenen Argument \code{uint irq} mittels \texttt{irq\_get\_desc\_lock} einen Eintrag vom Typ \code{struct irq_desc} (s.a.~\cite[64 f.]{Man20d}) und setzt gleichzeitig eine Spinlock-Sperre\footnote{
     leichtgewichtige Sperre, realisiert durch \textit{busy-waiting}, vgl.~\cite[150]{Man20g}
 } auf diese \code{struct} (\ldots \texttt{raw\_spin\_lock\_irqsave(&desc->lock, ...)}), damit keine nebenläufigen Änderungen an dieser erfolgen können.\\
 
@@ -91,3 +91,64 @@ Interessant an der Stelle ist der Bitweise-Vergleich mit dem Flag \code{IRQF_SHA
 Nach der Überprüfung wird die Sperre auf die \code{irq_desc} wieder aufgehoben: Hat die Methode ermitteln können, dass der IRQ angefordert werden kann, wird \code{1} zurückgegeben, ansonsten \code{0}\footnote{
 Anm.: C kennt im Original keinen Datentypen \textit{bool}, dieser wurde erst mit ANSI C99 eingeführt, vgl.~\cite[8]{ES3}
 }- dies im Übrigen auch für den Fall, falls kein IRQ zu dem übermittelten Integer-Wert gefunden wurde.
+
+\section{Teil 3}
+
+\textit{\texttt{request\_region} ist ein Makro im Linuxkernel (Version 2.6.38.8). Welche Funktion wird in dem Makro eingesetzt? Diese Funktion verwendet
+den kerneleigenen Datentyp \texttt{resource\_size\_t}. Welcher C-Datentyp
+verbirgt sich dahinter?}\\
+
+
+\noindent
+\texttt{request\_region} wird in \texttt{source/include/linux/ioport.h} als Makro definiert.\\
+In dem Makro wird die Funktion \texttt{\_\_request\_region} aus \texttt{source/kernel/resource.c} eingesetzt - tatsächlich an anderer Stelle auch einfach nur der Ausdruck \code{(1)}\footnote{
+``We don't need no stinkin' I/O port allocation crap.``, \url{https://elixir.bootlin.com/linux/v2.6.37.5/source/arch/sparc/include/asm/floppy_32.h#L25}, abgerufen 03.04.2025
+} - wir konzentrieren uns auf ersteres:  \texttt{\_\_request\_region} fordert einen exklusiven Schreibzugriff\footnote{
+und damit auch Lesezugriff
+} auf Speicherbereich (IO-Ports\footnote{
+\texttt{struct resource ioport\_resource} (\url{https://elixir.bootlin.com/linux/v2.6.37.5/source/kernel/resource.c#L25}, abgerufen 03.04.2025)
+}) an.\\
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm,
+    fontsize=\small]{c}
+    /**
+     * __request_region - create a new busy resource region
+     * @parent: parent resource descriptor
+     * @start: resource start address
+     * @n: resource region size
+     * @name: reserving caller's ID string
+     * @flags: IO resource flags
+     */
+    struct resource * __request_region(struct resource *parent,
+    resource_size_t start, resource_size_t n,
+    const char *name, int flags)
+    {
+        ...
+        write_lock(&resource_lock);
+        ...
+\end{minted}
+
+\noindent
+Hinter dem Datentyp \code{resource_size_t}\footnote{
+\url{https://elixir.bootlin.com/linux/v2.6.37.5/source/include/linux/types.h#L204}, abgerufen 03.04.2025
+} steht der C-Datentyp \code{phys_addr_t}\footnote{\textit{ebd.}}, der - je nach Rechnerarchitektur - einem \texttt{unsigned integer} der Wortgröße 32-Bit oder 64-Bit entspricht.
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm,
+    fontsize=\small]{c}
+    #ifdef CONFIG_PHYS_ADDR_T_64BIT
+    typedef u64 phys_addr_t;
+    #else
+    typedef u32 phys_addr_t;
+    #endif
+\end{minted}
+
+\noindent
+Diese Typdefinition dient also zum Adressieren der (\textit{physikalischen}) Speicherbereiche, die von \texttt{\_\_request\_region} angefordert werden.
