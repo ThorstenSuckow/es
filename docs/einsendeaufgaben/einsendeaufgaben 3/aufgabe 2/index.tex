@@ -1,0 +1,93 @@
+\chapter{Aufgabe 2}
+
+\section{Teil 1 und 2}
+
+\textit{Was macht die Kernelfunktion \texttt{can\_request\_irq}?}\\
+
+\noindent
+Im Folgenden ist die Methode zur besseren Nachvollziehbarkeit angegeben.
+Sie wurde aus dem Kernel-Code v6.13.17 aus der Datei \texttt{kernel/irq/manage.c}\footnote{
+Quelle:\url{https://elixir.bootlin.com/linux/v2.6.38.8/source/kernel/irq/manage.c#L402}, abgerufen 03.04.2025
+} entnommen.\\
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm,
+    fontsize=\small]{c}
+    /*
+     * Internal function that tells the architecture code whether a
+     * particular irq has been exclusively allocated or is available
+     * for driver use.
+     */
+    int can_request_irq(unsigned int irq, unsigned long irqflags)
+    {
+        struct irq_desc *desc = irq_to_desc(irq);
+        struct irqaction *action;
+        unsigned long flags;
+
+        if (!desc)
+            return 0;
+
+        if (desc->status & IRQ_NOREQUEST)
+            return 0;
+
+        raw_spin_lock_irqsave(&desc->lock, flags);
+        action = desc->action;
+        if (action)
+            if (irqflags & action->flags & IRQF_SHARED)
+                action = NULL;
+
+        raw_spin_unlock_irqrestore(&desc->lock, flags);
+
+        return !action;
+    }
+\end{minted}
+
+\noindent
+Wie in der Methode dokumentiert, erfragt die Methode, ob der gegebene \textbf{IRQ}\footnote{s.a.~\cite[52]{Man20d}} von einem Gerät/Gerätetreiber angefordert werden kann: Die Methode ermittelt zu dem übergebenen Argument \code{uint irq} mittels \texttt{irq\_get\_desc\_lock} einen Eintrag vom Typ \code{struct irq_desc} (s.a.~\cite[64 f.]{Man20d}) und setzt gleichzeitig eine Spinlock-Sperre\footnote{
+    leichtgewichtige Sperre, realisiert durch \textit{busy-waiting}, vgl.~\cite[150]{Man20g}
+} auf diese \code{struct} (\ldots \texttt{raw\_spin\_lock\_irqsave(&desc->lock, ...)}), damit keine nebenläufigen Änderungen an dieser erfolgen können.\\
+
+\noindent
+\code{irq_desc} beinhaltet u.a. einen Member, der eine gesetzte Sperre repräsentiert (\code{lock}) sowie einen Verweis \code{action} vom Typ \code{struct irqaction}, welcher Informationen zu dem mit dem IRQ assoziierten Gerät (\code{name}, \code{dev_id}, \ldots) enthält, und außerdem einen Member \code{flags}, eine Bitmaske, über die folgende Werte gesetzt werden können (Auszug\footnote{
+Quelle: \url{https://elixir.bootlin.com/linux/v2.6.38.8/source/include/linux/interrupt.h#L101}, abgerufen 03.04.2025
+}):
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm,
+    fontsize=\small]{c}
+    /*
+     * These flags used only by the kernel as part of the
+     * irq handling routines.
+     *
+     * IRQF_DISABLED - keep irqs disabled when calling the action handler.
+     *                 DEPRECATED. This flag is a NOOP and scheduled to be removed
+     * IRQF_SAMPLE_RANDOM - irq is used to feed the random generator
+     * IRQF_SHARED - allow sharing the irq among several devices
+     * IRQF_PROBE_SHARED - set by callers when they expect sharing mismatches to occur
+     * IRQF_TIMER - Flag to mark this interrupt as timer interrupt
+     * IRQF_PERCPU - Interrupt is per cpu
+     * IRQF_NOBALANCING - Flag to exclude this interrupt from irq balancing
+     * IRQF_IRQPOLL - Interrupt is used for polling (only the interrupt that is
+     *                registered first in an shared interrupt is considered for
+     *                performance reasons)
+     * IRQF_ONESHOT - Interrupt is not reenabled after the hardirq handler finished.
+     *                Used by threaded interrupts which need to keep the
+     *                irq line disabled until the threaded handler has been run.
+     * IRQF_NO_SUSPEND - Do not disable this IRQ during suspend
+     *
+     */
+\end{minted}
+
+\noindent
+Interessant an der Stelle ist der Bitweise-Vergleich mit dem Flag \code{IRQF_SHARED}: Ist nämlich der IRQ bereits belegt (\code{desc->action}), muss dieser für eine erfolgreiche Anforderung von mehreren Treibern/Prozessen gleichzeitig geteilt werden können (\textit{Interrupt-Sharing},~\cite[59]{Man20d}).\\
+
+\noindent
+Nach der Überprüfung wird die Sperre auf die \code{irq_desc} wieder aufgehoben: Hat die Methode ermitteln können, dass der IRQ angefordert werden kann, wird \code{1} zurückgegeben, ansonsten \code{0}\footnote{
+Anm.: C kennt im Original keinen Datentypen \textit{bool}, dieser wurde erst mit ANSI C99 eingeführt, vgl.~\cite[8]{ES3}
+}- dies im Übrigen auch für den Fall, falls kein IRQ zu dem übermittelten Integer-Wert gefunden wurde.
