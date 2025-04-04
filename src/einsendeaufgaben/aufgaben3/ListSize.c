@@ -1,6 +1,6 @@
  #include <stdio.h>
 
-void main() {
+int main() {
 
     printf("%18s (%zu)\n", "short",          sizeof(short));
     printf("%18s (%zu)\n", "unsigned short", sizeof(unsigned short));
@@ -21,4 +21,6 @@ void main() {
     printf("%18s (%zu)\n", "float",       sizeof(float));
     printf("%18s (%zu)\n", "double",      sizeof(double));
     printf("%18s (%zu)\n", "long double", sizeof(long double));
+
+    return 0;
 }
