@@ -85,3 +85,36 @@ unsigned long long (8)
 
 
 \section{Teil 2}
+
+Folgendes Makro ist gegeben:
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{c}
+    #define min(x,y) ({ \
+        typeof(x) _x = (x);	    \
+        typeof(y) _y = (y); 	\
+        (void) (&_x == &_y);	\
+        _x < _y ? _x : _y; })
+\end{minted}\\
+
+\noindent
+Die Funktionswiese ist wie folgt:\\
+
+\begin{itemize}
+    \itemsep0.5em
+    \item Der Compiler ersetzt Vorkommen von \texttt{min(x, y)} mit der rechten Seite der Makrodefinition.
+    \item Dabei werden temporäre Variablen \code{_x} / \code{_y} eingeführt, die entsprechend \code{x} / \code{y} getypt werden (\code{typeof}).
+    \item \code{(void) (&_x == &_y)} führt eine Typkompatibilitätsprüfung durch - hier werden die \textbf{Zeiger-Typen} verglichen.
+    Der Compiler gibt eine Warnung aus, wenn die Typen nicht zueinander kompatibel sind:
+    \begin{center}\texttt{comparison of distinct pointer types lacks a cast}\end{center}\\
+    Die Vorgaben bzgl. der Typkompatibilität bei Anwendung des Vergleichsoperators sind im Sprachstandard definiert, bspw. Kapitel 6.5.9 ANSI C99\footnote{
+        final draft of C99 standard plus TC1, TC2, TC3); WG14; 2007, \url{https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf}, abgerufen 04.04.2025
+    }: \blockquote[{6.5.9 Equality operators}]{
+    ``One of the following shall hold [Anm.: ``Constraints``]: [\ldots]both operands are pointers to qualified or unqualified versions of compatible types; [\ldots]``
+    }.\\
+    Insgesamt ist die Typüberprüfung notwendig, weil der ternäre Operator hier durchaus implizite Typkonvertierung (beim Anwendung von \code{<}) durchführt, was zu unerwünschten Ergebnissen im weiteren Programmverlauf führen kann.\\
+    So lässt ein Test des Makros ohne diese Codezeile bspw. Vergleiche von \code{float} mit \code{unsigned int} ohne weiteres zu.
+\end{itemize}
