@@ -1,0 +1,87 @@
+\chapter{Aufgabe 3}
+
+
+\section{Teil 1}
+\textit{Schreiben Sie ein C-Programm ListSize.c, das auf dem Bildschirm die
+        Größe der Datentypen
+\texttt{short},
+\texttt{unsigned short},
+\texttt{signed short},
+\texttt{int},
+\texttt{signed int},
+\texttt{unsigned int},
+\texttt{long},
+\texttt{unsigned long},
+\texttt{signed long},
+\texttt{long long},
+\texttt{unsigned long long},
+\texttt{signed long long},
+\texttt{float},
+\texttt{double},
+\texttt{long double}
+in Byte ausgibt.}\\
+
+
+\noindent
+C-Code zur zeilenweise Ausgabe der Größe (Byte) der einzelnen Datentypen.
+Für die \texttt{printf}-Ausgabe verwenden wir für die Substitution des Rückgabewerts von \code{sizeof} (C-Typ \code{size_t}) den Modifier \code{zu}\footnote{\texttt{z} gehört seit ANSI C99 zum Sprachumfang als Modifier für \texttt{signed size\_t}, vgl.~\url{https://en.cppreference.com/w/c/99} (abgerufen 04.04.2025)
+}.
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm,
+    fontsize=\small]{c}
+    #include <stdio.h>
+
+    void main() {
+
+        printf("%18s (%zu)\n", "short",          sizeof(short));
+        printf("%18s (%zu)\n", "unsigned short", sizeof(unsigned short));
+        printf("%18s (%zu)\n", "signed short",   sizeof(signed short));
+
+        printf("%18s (%zu)\n", "int",          sizeof(int));
+        printf("%18s (%zu)\n", "signed int",   sizeof(signed int));
+        printf("%18s (%zu)\n", "unsigned int", sizeof(unsigned int));
+
+        printf("%18s (%zu)\n", "long",          sizeof(long));
+        printf("%18s (%zu)\n", "unsigned long", sizeof(unsigned long));
+        printf("%18s (%zu)\n", "signed long",   sizeof(signed long));
+
+        printf("%18s (%zu)\n", "long long",          sizeof(long long));
+        printf("%18s (%zu)\n", "unsigned long long", sizeof(unsigned long long));
+        printf("%18s (%zu)\n", "signed long long",   sizeof(signed long long));
+
+        printf("%18s (%zu)\n", "float",       sizeof(float));
+        printf("%18s (%zu)\n", "double",      sizeof(double));
+        printf("%18s (%zu)\n", "long double", sizeof(long double));
+    }
+\end{minted}\\
+
+
+\noindent
+Die Ausgabe entspricht etwa\footnote{
+\texttt{Linux hbo-VirtualBox 5.4.0-91-generic #102-Ubuntu SMP Fri Nov 5 16:31:28 UTC 2021 x86\_64 x86\_64 x86\_64 GNU/Linux}
+}
+
+\begin{verbatim}
+             short (2)
+    unsigned short (2)
+      signed short (2)
+               int (4)
+        signed int (4)
+      unsigned int (4)
+              long (8)
+     unsigned long (8)
+       signed long (8)
+         long long (8)
+unsigned long long (8)
+  signed long long (8)
+             float (4)
+            double (8)
+       long double (16)
+ \end{verbatim}
+
+
+\section{Teil 2}
