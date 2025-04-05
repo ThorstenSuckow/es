@@ -29,7 +29,7 @@ void pad(int cmp, char *buf) {
  }
 
 /**
- * Pads integer values as required (leading 0s) and writes t he result in buf.
+ * Pads integer values as required (leading 0s) and writes the result in buf.
  */
 int padComponent(const char c, struct tm *MyDate, char *buf) {
     switch (c) {
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
             continue;
         }
 
-        // pad as required, print
+        // pad as required, print, reset BUFFER
         padComponent(next, MyDate, BUFFER);
         printf("%s", BUFFER);
         BUFFER[0] = '\0';
