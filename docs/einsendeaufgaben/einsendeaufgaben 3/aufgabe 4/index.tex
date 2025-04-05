@@ -1,0 +1,59 @@
+\chapter{Aufgabe 4}
+
+
+\section{Teil 1}
+
+\textit{Mit den Funktionen \texttt{time} und \texttt{localtime} können Sie eine Struktur
+Mydate füllen, die die aktuelle Zeit und das aktuelle Datum beinhaltet.
+Was machen \texttt{time} und \texttt{localtime} genau? Welche Bedeutung haben die
+Komponenten von \texttt{Mydate}?}\\
+
+\subsection*{\texttt{time\_t}}
+\texttt{time\_t} ist ein arithmetischer Datentyp zur Speicherung der \textbf{Zeit} - hierfür eignet sich ein ganzzahliger Datentyp zur Repräsentation der Zeit in Sekunden\footnote{
+s. \url{https://en.cppreference.com/w/cpp/chrono/c/time_t}, abgerufen 05.04.2025
+}, die seit einem festgelegten Datum verstrichen sind.
+In diesem Zusammenhang spricht man auch von der \textit{Unix Time} \footnote{
+\url{https://en.wikipedia.org/wiki/Unix_time}, abgerufen 05.04.2025
+}.
+
+\subsection*{\texttt{time}}
+Die Funktion \texttt{time\_t time(time\_t *tp)} liefert die aktuelle Kalenderzeit zurück, oder \texttt{-1}, falls die Referenzzeit nicht zur Verfügung steht.\\
+Ist \texttt{tp} nicht NULL, wird der Rückgabewert dem übergebenen Parameter zugewiesen (\cite[256]{KR88}).\\
+
+Zu Kalenderzeit sagt der C-Standard\footnote{
+    Quelle: ``final draft of C99 standard plus TC1, TC2, TC3); WG14; 2007``, \url{https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf} (abgerufen 05.04.2025)
+}:
+
+\blockquote[{\textbf{7.23.1 Components of time}, Hervorhebung i.O.}]{
+``Many functions deal with a \textit{calendar time} that represents the current
+date (according to the Gregorian calendar) and time. Some functions deal with \textit{local
+    time}, which is the calendar time expressed for some specific time zone, and with \textit{Daylight
+    Saving Time}, which is a temporary change in the algorithm for determining local time.
+    The local time zone and Daylight Saving Time are implementation-defined.``
+}\\
+
+\noindent
+In C basiert die Kalenderzeit also auf dem \textit{Gregorianischen Kalender}\footnote{
+\url{https://en.wikipedia.org/wiki/Gregorian_calendar}, abgerufen 05.04.2025
+}.
+
+\subsection*{\texttt{struct tm}}
+\texttt{struct}-Definition zur Speicherung einzelner \textit{Komponenten} einer Kalenderzeit (vgl.~\cite[255]{KR88}):
+
+\begin{itemize}
+    \itemsep0.5em
+    \item \texttt{int tm\_sec}; Sekunden nach Minute (0,61)\footnote{
+    ``$61$`` zur Repräsentation von \textit{Leap-Seconds}, s. \url{https://en.wikipedia.org/wiki/Leap_second} (abgerufen 05.04.2025)
+    }
+    \item \texttt{int tm\_min}; Minuten nach der Stunde (0,59)
+    \item \texttt{int tm\_hour}; Stunden seit Mitternacht (0,23)
+    \item \texttt{int tm\_mday}; Tag des Monats (1,31)
+    \item \texttt{int tm\_mon}; Monate seit Januar (0,11)
+    \item \texttt{int tm\_year}; Jahre seit 1900
+    \item \texttt{int tm\_wday}; Tage seit Sonntag (0,6)
+    \item \texttt{int tm\_yday}; Tage seit Januar 1 (0,365)
+    \item \texttt{int tm\_isdst}; Daylight Saving Time flag
+\end{itemize}
+
+\subsection*{\texttt{localtime}}
+Die Funktion \texttt{struct tm localtime(time\_t *tp)} überführt die übergebene Kalenderzeit in die \textit{lokale Zeit} (\cite[256]{KR88}).
