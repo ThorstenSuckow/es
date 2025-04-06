@@ -38,3 +38,150 @@ first is the base address or Data register, the second is the port’s Status re
 }
 
 
+\section{Teil 2}
+
+Der Quelltext des Programms ist im Folgenden angegeben.\\
+Die Lösung verwendet zur Darstellung des 256 Bit-Feldes ein \code{unsigned char}-Feld der Länge \code{BITMAP_SIZE}\footnote{
+die Makrodefinition von \texttt{BYTESIZE} dient hier alleine zur Vermeidung von Tippfehlern u.ä. im Quellcode.
+}.\\
+
+\noindent
+Für die Darstellung der Bits werden die im Feld gespeicherten Bytes (\code{0x00}) beim (Zurück-)Setzen jeweils UND- bzw. ODER-maskiert, wobei zum Zurücksetzen eine invertierte Bitmaske verwendet wird - Details finden sich in der Funktion \code{_BitMapSet}, die die Logik von \code{BitMapSet} und \code{BitMapClear} zusammenfasst.
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm,
+    fontsize=\small]{c}
+    #include <stdio.h>
+    #include <stdlib.h>
+
+    #define BITMAP_SIZE 32
+    #define BYTESIZE 8
+
+
+    unsigned char bitmap[BITMAP_SIZE];
+
+
+    void printBitmap(int bit_i, int set) {
+
+        if (set == 0) {
+            printf("Clearing bit %d:", bit_i);
+        } else {
+            printf("Setting bit %d:", bit_i);
+        }
+
+        for (int i = BITMAP_SIZE - 1; i >= 0; i--) {
+            for (int j = 0; j < BYTESIZE; j++) {
+                if (j % (BYTESIZE / 2) == 0) {
+                    printf(" ");
+                }
+                printf("%d", (bitmap[i] & (0x01 << (BYTESIZE - 1) - j)) ? 1 : 0);
+
+            }
+        }
+        printf("\n");
+    }
+
+
+    void BitMapInit() {
+        for (int i = 0; i < BITMAP_SIZE; i++) {
+            bitmap[i] = 0x00;
+        }
+    }
+
+
+    void _BitMapSet(int PortNbr, int value) {
+        if (value != 0 && value != 1) {
+            fprintf(stderr, "Unexpected value for bit: %d\n", value);
+            exit(1);
+
+        }
+
+        int idx = PortNbr / BYTESIZE;
+
+        if (PortNbr < 0 || idx > BITMAP_SIZE -1) {
+            fprintf(stderr,
+            "Error: PortNbr %d does not exist in range [0, %d]\n",
+            PortNbr, BITMAP_SIZE * BYTESIZE - 1);
+            exit(1);
+        }
+
+        int newbit = 0x01 << (PortNbr % 8);
+
+        if (value == 0) {
+            // 0001 0000 -> 1110 1111
+            // 1110 1111 & 0101 0001 -> 0100 0001
+            bitmap[idx] &= ~newbit;
+        } else {
+            // 0001 0000 | 0100 0001 -> 0101 0001
+            bitmap[idx] |= newbit;
+        }
+    }
+
+
+    void BitMapSet(int PortNbr) {
+        _BitMapSet(PortNbr, 1);
+    }
+
+    void BitMapClear(int PortNbr) {
+        _BitMapSet(PortNbr, 0);
+    }
+
+
+    int main(int argc, char *argv[]) {
+        if (argc <= 1) {
+            printf("Usage: BitMap bit_1 bit_2 ... bit_n, with bit_i in [0,  %d]\n",
+                BITMAP_SIZE * BYTESIZE);
+            exit(0);
+        }
+
+        BitMapInit();
+        int bit_i;
+
+        for (int i = 1; i < argc; i++) {
+            if (sscanf(argv[i], "%d", &bit_i) != 1) {
+                printf("no valid argument for bit_%d, skipping...\n", i - 1);
+                continue;
+            }
+
+            BitMapSet(bit_i);
+            printBitmap(bit_i, 1);
+        }
+
+        for (int i = 1; i < argc; i++) {
+            if (sscanf(argv[i], "%d", &bit_i) != 1) {
+                continue;
+            }
+
+            BitMapClear(bit_i);
+            printBitmap(bit_i, 0);
+        }
+
+        return 0;
+    }
+
+\end{minted}
+
+\noindent
+Für eine \code{BITMAP_SIZE} von $2$ (= $16$ bit) liefert ein Aufruf des Programms mit den Argumenten
+\begin{center}
+    \texttt{./BitMap.out 1 6 7 11 15}
+\end{center}
+
+\noindent
+folgende Ausgabe:
+
+\begin{verbatim}
+Setting bit 1: 0000 0000 0000 0010
+Setting bit 6: 0000 0000 0100 0010
+Setting bit 7: 0000 0000 1100 0010
+Setting bit 11: 0000 1000 1100 0010
+Setting bit 15: 1000 1000 1100 0010
+Clearing bit 1: 1000 1000 1100 0000
+Clearing bit 6: 1000 1000 1000 0000
+Clearing bit 7: 1000 1000 0000 0000
+Clearing bit 11: 1000 0000 0000 0000
+Clearing bit 15: 0000 0000 0000 0000
+\end{verbatim}
