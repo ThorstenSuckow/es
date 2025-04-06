@@ -1,0 +1,40 @@
+\chapter{Aufgabe 5}
+
+
+\section{Teil 1}
+
+\textit{Was ist ein ``Port``? Was ist der Unterschied zu einem ``Register``? Wie
+viele Ports hat die Parallelschnittstelle?}\\
+
+\noindent
+Ein \textbf{Port} bezeichnet einen physikalischen Speicherbereich, der dazu dient, Daten von Treibern entgegenzunehmen bzw. von Treibern auszulesen, wobei die Speicherbereiche von dem Treiber beschrieben werden und von angeschlossenen Geräten gelesen werden, und umgekehrt:
+Ein Port lässt sich grob als ``Schleuse`` / ``Schnittstelle`` für den Datenfluss zwischen Software und Hardware betrachten.\\
+
+\noindent
+Ein \textbf{Register} in der Soft-/Hardware-Entwicklung ist im Allgemeinen als eine \textit{Speicherzelle} zum Ablegen und Auslesen von Daten zu verstehen.
+
+\blockquote[{\cite[54]{ES3}}]{
+    ``Sind die Register an einen speziellen (IO-)Bus angeschlossen, werden sie auch als Port bezeichnet.``
+}\\
+
+\noindent
+Ein Port kann mehrere dieser Register zusammenfassen, wie \textit{Tanenbaum und Bos} schreiben:
+
+\blockquote[{\cite[31, Hervorhebung i.O.]{TB24}}]{
+[\ldots] a minimal disk controller might have registers for specifying
+    the disk address, memory address, sector count, and direction (read or write) [\ldots]
+    The collection of all the device registers forms the \textbf{I/O port space} [\ldots]
+}
+
+\noindent
+Eine \textbf{Parallelschnittstelle} nach \textit{IEEE 1284}\footnote{
+\url{https://en.wikipedia.org/wiki/IEEE_1284}, abgerufen 06.04.2025
+} verfügt über 3 Ports: Datenport, Statusport, Controlport (vgl.~\cite[54 f.]{ES3}):
+
+\blockquote[{IEEE 1284: Parallel Ports\footnote{\url{https://web.archive.org/web/20061115015448/http://www.nor-tech.com/solutions/dox/ieee1284_parallel_ports.pdf}, abgerufen 06.04.2025}}]{
+``The standard parallel port uses three consecutive addresses. The
+first is the base address or Data register, the second is the port’s Status register, and the
+    third is the port’s Control register.``
+}
+
+
