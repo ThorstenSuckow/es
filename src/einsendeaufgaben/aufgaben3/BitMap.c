@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BITMAP_SIZE 2// * 8!
+#define BITMAP_SIZE 32
 #define BYTESIZE 8
 
 
