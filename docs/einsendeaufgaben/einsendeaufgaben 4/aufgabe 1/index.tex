@@ -1,0 +1,23 @@
+\chapter{Aufgabe 1}
+
+\section{Teil 1}
+\textit{Welcher Bootlader sitzt auf dem Image?}\\
+
+\noindent
+Wie dem Hexdump~\ref{lst:hexdump} zu entnehmen ist, handelt es sich bei den ersten 512 Bytes der Datei um einen gültigen Bootblock, erkennbar an den letzten beiden Bytes $0x55$ und $0xAA$ (\textit{Signatur}, vgl.~\cite[142]{ES4}).\\
+Der \textbf{Bootloadername} ist in den ersten 11 Bytes zu finden: Es handelt sich um den Bootloader \texttt{Syslinux}\footnote{
+\url{https://en.wikipedia.org/wiki/SYSLINUX}, abgerufen 09.04.2025
+}.
+
+\vspace{5mm}
+
+\begin{lstlisting}[caption={Hexdump der ersten 512 Bytes der Datei \textasciitilde{}/Einsendeaufgaben/ESA1/ImageESA1.flp} (Ausschnitt), captionpos=b, label={lst:hexdump},basicstyle=\ttfamily\footnotesize, frame=single]
+00000000  eb 58 90 53 59 53 4c 49  4e 55 58 00 02 04 04 00  ; .X.SYSLINUX••••
+00000010  02 00 02 10 27 f8 08 00  20 00 40 00 00 00 00 00  ; ••••'.•• @@00000
+.
+.
+.
+000001e0  72 72 6f 72 0d 0a 00 00  00 00 00 00 00 00 00 00  ; rror__00 00000000
+000001f0  00 00 00 00 00 00 00 00  fe 02 b2 3e 18 37 55 aa  ; 00000000.•.>•7U.
+00000200  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ; 00000000 00000000
+\end{lstlisting}
