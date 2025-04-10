@@ -1,0 +1,136 @@
+\chapter{Aufgabe 2}
+
+\section{Teil 1}
+
+\textit{Die serielle Schnittstelle Ihres PC-Systems basiert auf einem besonderen Chip, der allerdings vom Linuxkernel nicht unterstützt wird. Sie
+schreiben deshalb einen neuen Treiber für die serielle Schnittstelle. Als
+Vorlage dient Ihnen der (Standard-)Linuxtreiber, in dem Sie die hardwarerelevanten Teile an Ihren Chip anpassen.
+Müssen Sie Ihrem Kunden den Quellcode Ihres Treibers mitliefern?}\\
+
+\noindent
+Sofern ``Vorlage`` nicht als ``intelektueller Ansporn`` verstanden wird, sondern als Vorlage, die auch Bestandteile des Linuxtreibers beinhaltet, muss der Quellcode der \textit{GNU GPL} mitgeliefert bzw. auf andere (öffentlich zugängliche) Art und Weise zur verfügung gestellt werden.\\
+\textit{Bollenbacher} weist in diesem Zusammenhang auf eine Grauzone hin:
+
+\blockquote[{\cite[184]{ES4}}]{
+    ``Der Umgang mit dem Systemtreiber liegt in einer Grauzone. Als Bestandteil des Linuxkernels, der unter der GPL steht, muss er auch unter
+    der GPL stehen. [\ldots] Es gibt eine Reihe von Herstellern, die die Systemtreiber ihrer Produkte nicht in Quellform, sondern in übersetzter
+    (d.h. als Binärmodul) Form liefern. Dies wird zur Zeit noch geduldet.``
+
+}
+
+\section{Teil 2}
+
+\textit{In einem Internetforum beschreiben Sie unter anderem, wie Sie für Ihren eigenen PC aus einem Standardtreiber (Linux) einen superschnellen
+Treiber für beispielsweise Harddisks entwickelt haben.
+Einige Personen, die auch an diesem Forum teilnehmen, fordern Sie
+dazu auf, den Treiber offenzulegen.
+Müssen Sie dem nachkommen?}\\
+
+\noindent
+Nein, da der Treiber für den privaten Gebrauch und nicht für die Weitergabe bestimmt ist, muss er nicht veröffentlicht werden.\\
+Sollte aus dem privaten Projekt allerdings ein öffentliches/kommerzielles Projekt werden, muss unter dem Copyleft-Hinweis der Quellcode der öffentlichkeit zur Verfügung gestellt werden.
+
+\section{Teil 3}
+
+\textit{Sie übersetzen Ihr C-Programm mit dem unter GPL stehenden GNUC-Compiler.
+Müssen Sie deshalb Ihrem Kunden auch Ihre C-Quellen mitliefern?}\\
+
+\noindent
+Nein, da die GNUC-Standardbibliotheken unter der LGPL veröffentlich sind.\\
+Diese ist weniger viral/restriktiv als die GPL.
+
+
+\section{Teil 4}
+
+\textit{Sie setzen eine x86-CPU mit 32 Bit ein. Wie viele Bytes können Sie
+    damit direkt adressieren?
+    Wenn Sie auf dieser CPU ein Linux betreiben, wie groß darf dann Ihr
+    Anwenderprogramm maximal sein?
+}\\
+
+\noindent
+Mit 32 Bit lassen $2^{32}$ Speicheradressen adressieren - mit einer Wortbreite von 8Bit für eine Adresse werden also ebensoviele Bytes direkt adressiert.\\
+Das Programm darf maximal $3$GB groß sein, da von den $2^{32}$ Bit insg. 1 GB für den Kernel reserviert sind (vgl.~\cite[3 f.]{ES4}).
+
+
+\section {Teil 5}
+
+\textit{Der GNU-C-Compiler kennt die folgenden Optionen:
+\begin{itemize}
+    \item \texttt{-l}
+    \item \texttt{-Wformat}
+\end{itemize}
+    Was bedeuten diese Optionen?
+}\\
+
+\noindent
+\texttt{-Wformat}\\
+Ein Aufruf von \texttt{man gcc} liefert für \texttt{-l}\footnote{
+etwas übersichtlicher auch unter \url{https://man7.org/linux/man-pages/man1/gcc.1.html} (abgerufen 10.04.2025)
+}:
+
+\blockquote[]{
+``-l library\\
+Search the library named library when linking.  (The second
+    alternative with the library as a separate argument is only
+    for POSIX compliance and is not recommended.)``
+}\\
+
+\noindent
+Damit ist es also möglich, für den Kompilierungsvorgang - statisch oder dynamisch - die zu linkenden Bibliotheken anzugeben, wobei:
+
+\blockquote[]{
+    ``If
+    both static and shared libraries are found, the linker gives
+    preference to linking with the shared library unless the
+    -static option is used.``
+}
+
+\noindent
+\texttt{-Wformat}\\
+
+\noindent
+Laut \texttt{man gcc} ist ``-Wformat is equivalent to -Wformat=1``.\\
+
+\noindent
+\texttt{-Wformat=n}  überprüft Aufrufe zu \texttt{printf} und \texttt{scanf}, und ob die Typen der übergebenen Argumente zu den Platzhaltern im Format-String passend sind.
+
+\noindent
+Das unterschiedliche Verhalten kann anhand des folgendes Programms nachvollzogen werden:
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+    #include <stdio.h>
+    int main() {
+        printf("%f", 1);
+        return 0;
+    }
+\end{minted}
+
+\noindent
+Im Formatstring ist \texttt{\%f} angegeben, was in C als Platzhalter für einen Fliesskommatypen \textit{float}/\textit{double} vorgesehen ist (\cite[18, 244]{KR88}).\\
+
+\noindent
+Kompilieren ohne Angabe von \texttt{Wformat} oder unter Angabe von \texttt{Wformat=1} liefert:\\
+
+\begin{lstlisting}[
+    basicstyle=\ttfamily\footnotesize,
+    frame=none,
+    keepspaces=true,
+    showspaces=false
+]
+./HelloWorld.c:5:27: warning: format ‘%f’ expects argument of type ‘double’,
+                    but argument 2 has type ‘int’ [-Wformat=]
+5 |     printf("Hello World! %f", 1);
+  |                          ~^   ~
+  |                           |   |
+  |                           |   int
+  |                           double
+  |                          %d
+\end{lstlisting}
+
+\noindent
+während \texttt{gcc HelloWorld.c -Wformat=0} keine Warnung des Compilers erzeugt
