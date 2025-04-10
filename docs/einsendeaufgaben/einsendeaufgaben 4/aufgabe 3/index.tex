@@ -1,0 +1,143 @@
+\chapter{Aufgabe 3}
+
+\section{Teil 1}
+
+\textit{Geben Sie die Datei \texttt{maps} des Prozesses mit der Prozessnummer 1 wieder.}\\
+
+\noindent
+Ein Aufruf von
+
+\begin{center}
+    \texttt{nano /proc/1/maps}
+\end{center}
+
+\noindent
+liefert den in Listing~\ref{lst:procmap} (auszugsweise) angebenen Inhalt:
+
+\begin{lstlisting}[
+caption={Ausschnitt des Inhalts von \texttt{/proc/1/maps}},
+captionpos=b,
+label={lst:procmap},
+basicstyle=\ttfamily\footnotesize,
+frame=single,
+keepspaces=true,
+showspaces=false
+]
+5cba9766000-55cba9798000 r--p 00000000 08:05 270329        /usr/lib/systemd/systemd
+55cba9798000-55cba9856000 r-xp 00032000 08:05 270329       /usr/lib/systemd/systemd
+55cba9856000-55cba98ac000 r--p 000f0000 08:05 270329       /usr/lib/systemd/systemd
+55cba98ac000-55cba98f2000 r--p 00145000 08:05 270329       /usr/lib/systemd/systemd
+55cba98f2000-55cba98f3000 rw-p 0018b000 08:05 270329       /usr/lib/systemd/systemd
+55cbaab10000-55cbaad08000 rw-p 00000000 00:00 0            [heap]
+7fbf84000000-7fbf84021000 rw-p 00000000 00:00 0
+.
+.
+.
+7fbf8d6eb000-7fbf8d6f1000 rw-p 00000000 00:00 0
+7fbf8d709000-7fbf8d70a000 r--p 00000000 08:05 265970 /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7fbf8d70a000-7fbf8d72d000 r-xp 00001000 08:05 265970 /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7fbf8d72d000-7fbf8d735000 r--p 00024000 08:05 265970 /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7fbf8d736000-7fbf8d737000 r--p 0002c000 08:05 265970 /usr/lib/x86_64-linux-gnu/ld-2.31.so
+.
+.
+.
+7ffc06c6b000-7ffc06c8c000 rw-p 00000000 00:00 0            [stack]
+7ffc06cd8000-7ffc06cdb000 r--p 00000000 00:00 0            [vvar]
+7ffc06cdb000-7ffc06cdc000 r-xp 00000000 00:00 0            [vdso]
+ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0    [vsyscall]
+\end{lstlisting}
+
+\noindent
+Hier sind die von dem \texttt{systemd}-Prozess (\textit{init}-Prozess,~\cite[92]{Man20e}) belegten Speicherbereiche gelistet.
+Charakteristisch ist der hohe Verbrauch von Speicher für die (dynamisch) gelinkten Bibliotheken.
+
+\section{Teil 2}
+
+\textit{Wie heißt der Prozess mit der Prozessnummer 1?}\\
+
+\noindent
+Ein Aufruf von
+
+\begin{center}
+\texttt{ps -p 1}
+\end{center}
+
+\noindent
+liefert die gesuchte Antwort \texttt{systemd}:\\
+
+\begin{lstlisting}[
+    basicstyle=\ttfamily,
+    keepspaces=true,
+    showspaces=false
+]
+      PID TTY          TIME CMD
+      1    ?       00:00:02 systemd
+\end{lstlisting}
+
+\section{Teil 3}
+
+\textit{Ist der Prozess dynamisch oder statisch gelinkt? Wenn der Prozess
+dynamisch gelinkt ist, geben Sie bitte die Namen der verwendeten Bibliotheken an.}\\
+
+\noindent
+Der Prozess ist \textbf{dynamisch gelinkt} - Bibliotheken, die von dem Prozess benötigt werden, stehen so auch anderen Prozessen/Programmen zur Verfügung.\\
+
+\noindent
+Um die Shared Libraries anzugeben, die wir  - wie in Aufgabenteil a) festgestellt - auch in \texttt{/proc/1/maps} gelistet haben, nutzen wir \texttt{egrep}\footnote{
+Schalter \texttt{-o}: ``Print only the matched (non-empty) parts of a matching line, with each such part on a separate output line.`` (Quelle: \texttt{man egrep})
+} und pipen die Ausgabe zu \texttt{sort}, um Dubletten zu entfernen:
+
+\begin{center}
+\begin{verbatim}
+egrep -o "/.*\.so.*" /proc/1/maps | sort -u
+\end{verbatim}
+\end{center}
+
+\noindent
+Wir erhalten die in~\ref{lst:sharedlibs} angegebene Liste von Shared Libraries.
+
+\newpage
+\begin{lstlisting}[
+    caption={Ausgabe nach Aufruf des in dem Lösungsvorschlag angegebenen Kommandos},
+    captionpos=b,
+    label={lst:sharedlibs},
+    basicstyle=\ttfamily\footnotesize,
+    frame=single,
+    keepspaces=true,
+    showspaces=false
+]
+/usr/lib/systemd/libsystemd-shared-245.so
+/usr/lib/x86_64-linux-gnu/ld-2.31.so
+/usr/lib/x86_64-linux-gnu/libacl.so.1.1.2253
+/usr/lib/x86_64-linux-gnu/libapparmor.so.1.6.1
+/usr/lib/x86_64-linux-gnu/libargon2.so.1
+/usr/lib/x86_64-linux-gnu/libaudit.so.1.0.0
+/usr/lib/x86_64-linux-gnu/libblkid.so.1.1.0
+/usr/lib/x86_64-linux-gnu/libc-2.31.so
+/usr/lib/x86_64-linux-gnu/libcap-ng.so.0.0.0
+/usr/lib/x86_64-linux-gnu/libcap.so.2.32
+/usr/lib/x86_64-linux-gnu/libcrypto.so.1.1
+/usr/lib/x86_64-linux-gnu/libcryptsetup.so.12.5.0
+/usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+/usr/lib/x86_64-linux-gnu/libdevmapper.so.1.02.1
+/usr/lib/x86_64-linux-gnu/libdl-2.31.so
+/usr/lib/x86_64-linux-gnu/libgcrypt.so.20.2.5
+/usr/lib/x86_64-linux-gnu/libgpg-error.so.0.28.0
+/usr/lib/x86_64-linux-gnu/libidn2.so.0.3.6
+/usr/lib/x86_64-linux-gnu/libip4tc.so.2.0.0
+/usr/lib/x86_64-linux-gnu/libjson-c.so.4.0.0
+/usr/lib/x86_64-linux-gnu/libkmod.so.2.3.5
+/usr/lib/x86_64-linux-gnu/liblz4.so.1.9.2
+/usr/lib/x86_64-linux-gnu/liblzma.so.5.2.4
+/usr/lib/x86_64-linux-gnu/libm-2.31.so
+/usr/lib/x86_64-linux-gnu/libmount.so.1.1.0
+/usr/lib/x86_64-linux-gnu/libpam.so.0.84.2
+/usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.9.0
+/usr/lib/x86_64-linux-gnu/libpthread-2.31.so
+/usr/lib/x86_64-linux-gnu/librt-2.31.so
+/usr/lib/x86_64-linux-gnu/libseccomp.so.2.5.1
+/usr/lib/x86_64-linux-gnu/libselinux.so.1
+/usr/lib/x86_64-linux-gnu/libudev.so.1.6.17
+/usr/lib/x86_64-linux-gnu/libunistring.so.2.1.0
+/usr/lib/x86_64-linux-gnu/libuuid.so.1.3.0
+\end{lstlisting}
