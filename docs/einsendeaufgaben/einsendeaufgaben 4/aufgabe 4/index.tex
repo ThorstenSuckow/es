@@ -1,0 +1,190 @@
+\chapter{Aufgabe 4}
+
+\section{Teil 1}
+
+\textit{Was ist eine \texttt{Proc}-Datei?}\\
+
+\noindent
+Die Architektur von Unix ist sehr dateiorientiert ausgelegt.
+Es finden sich nicht nur Geräteinformationen im Verzeichnissystem (\texttt{/dev}), sondern es werden auch Prozessinformationen im Verzeichnissystem abgelegt.
+\textit{Pseudodateien} findet man auch unter \texttt{/proc}: So hält \texttt{/proc/[PID]/maps} Informationen zu den Prozessen mit den jeweiligen PIDs und ihren Speicherzuordnungen vor (vgl.~\cite[103]{ES4}]).\\
+
+\noindent
+Als \texttt{Proc}-Datei bezeichnet man unter Unix also ganz allgemein (Pseudo-)Dateien, die \textbf{System-} und \textbf{Prozessinformationen} zur Verfügung stellen.
+
+\section{Teil 2}
+
+\textit{Gibt es eine Angabe Interrupt und Cached in der Proc-Datei \texttt{/proc/meminfo}?}\\
+
+\noindent
+Ein Aufruf von
+
+\begin{verbatim}
+       egrep "^Cached" /proc/meminfo
+\end{verbatim}
+
+\noindent
+liefert den Treffer
+
+
+\begin{center}
+    \texttt{Cached:          1212384 kB}
+\end{center}
+
+\noindent
+wohingegen
+
+\begin{verbatim}
+       egrep "^Interrupt" /proc/meminfo
+\end{verbatim}
+
+\noindent
+keine Treffer liefert.
+Eine manuelle Inspektion aller Einträge über
+
+\begin{verbatim}
+       cat /proc/meminfo | sort | less
+\end{verbatim}
+
+
+\noindent
+bestätigt dies:
+
+\begin{lstlisting}[
+    basicstyle=\ttfamily\footnotesize,
+    frame=single,
+    keepspaces=true,
+    showspaces=false
+]
+...
+Inactive:         553372 kB
+Inactive(anon):    90440 kB
+Inactive(file):   462932 kB
+KernelStack:        6896 kB
+KReclaimable:     179680 kB
+Mapped:           217448 kB
+...
+\end{lstlisting}
+
+
+\section{Teil 3}
+
+\textit{Welche Wirkung haben die beiden Optionen \texttt{-o} und \texttt{-x} von \texttt{egrep}?}\\
+
+\noindent
+\texttt{-o}: liefert nur die durch den regulären Ausdruck gefundene Zeichenkette und nicht die gesamte Zeile, in der der Treffer vorkommt\footnote{
+siehe auch Lösungsvorschlag zu Aufgabe 3)
+}. \texttt{man egrep} sagt u.a.:
+
+\begin{verbatim}
+-o, --only-matching
+              Print  only  the matched (non-empty) parts of a matching
+              line, with each such part on a separate output line.
+\end{verbatim}
+
+\\
+
+\noindent
+\texttt{-x}: weist \texttt{egrep} an, den Suchausdruck auf die gesamte Zeile anzuwenden:\\
+
+\begin{verbatim}
+-x, --line-regexp
+              Select only those matches that exactly match the
+              whole line. For a regular expression pattern, this
+              is like parenthesizing the pattern and then
+              surrounding it with ^ and $.
+\end{verbatim}
+
+\noindent
+\code{^} und \code{$} werden als \textit{Anker} bezeichnet und kennzeichnen Zeilenbeginn und Zeilenende.
+Mit ihrer Hilfe kann man den Suchausdruck weiter einschränken:
+So hatten wir bei der Suche nach \texttt{Cached} in dem vorherigen Aufgabenteil bspw. den Suchausdruck
+
+\begin{verbatim}
+    ^Cached
+\end{verbatim}
+
+\noindent
+verwendet, um Treffer wie \texttt{SwapCached} in der Ergebnisliste auszuschließen.
+Allerdings können wir an dieser Stelle nicht einfach mit dem Anker \code{$} arbeiten, da ein Eintrag in \texttt{/proc/meminfo} mit Informationen über den verbrauchten Speicher endet (Angabe in kB). \\
+
+\noindent
+So liefert
+
+\begin{verbatim}
+    egrep "^Cached$" /proc/meminfo
+\end{verbatim}
+
+\noindent
+bzw.
+
+
+\begin{verbatim}
+egrep -x "Cached" /proc/meminfo
+\end{verbatim}
+
+
+\noindent
+keine Treffer - wir müssen an dieser Stelle
+
+\begin{verbatim}
+egrep "^Cached.*kB$" /proc/meminfo
+\end{verbatim}
+
+\noindent
+bzw.
+
+\begin{verbatim}
+egrep -x "Cached.*kB" /proc/meminfo
+\end{verbatim}
+
+\noindent
+verwenden.
+
+\section{Teil 4}
+
+\textit{Schreiben Sie ein Skript \texttt{Procfilt}, das periodisch die Werte von \texttt{MemTotal}
+und \texttt{MemFree} der Proc-Datei \texttt{/proc/meminfo} überprüft und die Differenz der beiden Werte ausrechnet
+und auf dem Terminal ausgibt. Es reicht aus, wenn die Überprüfung alle 5 Sekunden erfolgt.}\\
+
+
+
+\noindent
+Die Lösung ist in Listing~\ref{lst:procfilt} angegeben}.
+Wir erlauben die Angabe des gewünschten Intervalls als Argument, es findet allerdings nur ein einfaches Casting auf einen Ganzzahlwert statt, keine Überprüfung auf Format des angegebenen Arguments.\\
+
+\noindent
+Das Auslesen der Werte aus \texttt{/proc/meminfo} wird über ein gepiptes \texttt{egrep} realisiert - im ersten Schritt wird die Zeile ausgelesen, der zweite Schritt liefert den kB-Wert:
+
+\begin{verbatim}
+egrep -o  "^MemTotal(.*)kB$" /proc/meminfo | egrep -o "[[:digit:]]{0,}
+\end{verbatim}
+
+\noindent
+Wir nutzen den Wagenrücklauf\texttt{\textbackslash r}, um die Ausgabe zeilenweise zu überschreiben und somit etwas übersichtlicher zu halten.
+
+\begin{listing}[H]
+\begin{minted}[linenos,fontsize=\small]{bash}
+#! /bin/bash
+echo "Usage: procfilt.sh [n] "
+echo "       n = Interval in seconds, defaults to 5"
+
+default="5"
+arg1=${1}
+interval=$((0 + arg1))
+
+if [ ${interval} -le 0 ]
+    then interval=${default}
+fi
+
+while true
+    do
+        memtotal=$(egrep -o  "^MemTotal(.*)kB$" /proc/meminfo | egrep -o "[[:digit:]]{0,}")
+        memfree=$(egrep -o  "^MemFree(.*)kB$" /proc/meminfo | egrep -o "[[:digit:]]{0,}")
+        printf  "\r $((memtotal - memfree))"
+        sleep ${interval}
+    done
+\end{minted}
+\caption{\texttt{procfilt.sh} zur Ausgabe der Differenz von \texttt{MemTotal} und \texttt{MemFree} aus \texttt{/proc/meminfo}.}
+\label{lst:procfilt}
+\end{listing}
