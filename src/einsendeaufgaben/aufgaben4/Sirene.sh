@@ -17,7 +17,7 @@ echo "Suche nach laufender Sirenensteuerung..."
 prevproc=$(ps hS -o pid -C Sirene.sh)
 for i in $prevproc
     do
-        if [[ ${i} -ne $$ ]]
+        if [ ${i} -ne $$ ]
             then
                 echo "Killing previous Sirene.sh ${i}"
                 kill ${i}
@@ -36,7 +36,7 @@ while true
             "06:00" | "14:00" | "14:02")
                 OVERFLOW=$(date "+%-S")
 
-                if [[ ${OVERFLOW} -gt 0 ]]
+                if [ ${OVERFLOW} -gt 0 ]
                     then
                         echo "$(date "+%H:%M:%S") : ${OVERFLOW} Sekunden werden für"
                         echo "           den nächsten Tick abgezogen."
