@@ -1,0 +1,158 @@
+\chapter{Aufgabe 5}
+
+\section{Teil 1}
+\textit{Was bewirkt \texttt{sudo date -s 16:30:20}?}\\
+
+\noindent
+Die Option \texttt{-s} steht für \textit{set} und bewirkt die Aktualisierung des Systemdatums mit dem angegebenen Wert:
+
+\begin{verbatim}
+   -s, --set=STRING
+      set time described by STRING
+\end{verbatim}
+
+\noindent
+Das Setzen des Systemdatums ist dem \textit{root}-User vorbehalten, weswegen das Kommando unter Anwendung  von \texttt{sudo} durchgeführt werden muss, sofern der \texttt{root}-User nicht bereits für die geg. Sitzung angemeldet ist.
+
+
+\section{Teil 2}
+
+\textit{Schreiben Sie ein Skript \texttt{Sirene\_Ein}, das die Sirene später im Betrieb
+hardwaremäßig einschalten wird. Für Ihre Zwecke reicht es, wenn dieses
+Skript lediglich die Meldung ``Sirene eingeschaltet`` ausgibt und sich
+dann beendet.}\\
+
+\noindent
+Das Skript ist in Listing~\ref{lst:sireneein} angegeben.
+
+\begin{listing}[H]
+    \begin{minted}[linenos,fontsize=\small]{bash}
+#! /bin/bash
+echo "Sirene eingeschaltet"
+exit 0
+    \end{minted}
+    \caption{\texttt{Sirene\_Ein.sh}}
+    \label{lst:sireneein}
+\end{listing}
+
+\section{Teil 3}
+
+\textit{Schreiben Sie ein Skript \texttt{Sirene\_Aus}, das die Sirene später im Betrieb
+hardwaremäßig ausschalten wird. Für Ihre Zwecke reicht es, wenn dieses
+Skript lediglich die Meldung ``Sirene ausgeschaltet`` ausgibt und sich
+dann beendet.}\\
+
+\noindent
+Das Skript ist in Listing~\ref{lst:sireneaus} angegeben.
+
+\begin{listing}[H]
+    \begin{minted}[linenos,fontsize=\small]{bash}
+#! /bin/bash
+echo "Sirene ausgeschaltet"
+exit 0
+    \end{minted}
+    \caption{\texttt{Sirene\_Aus.sh}}
+    \label{lst:sireneaus}
+\end{listing}
+
+
+\section{Teil 4}
+
+\textit{Schreiben Sie ein Skript \texttt{Sirene}, das zu jedem Schichtende die Sirene
+ca. eine Minute lang ertönen lässt. Das Skript wird beim Einschalten
+des Rechners gestartet und arbeitet im Hintergrund, bis der Rechner
+wieder ausgeschaltet wird. Wichtig ist, dass das Schichtende möglichst
+genau erkannt wird. Überlegen Sie sich, wie erreicht werden kann, dass
+das Skript nicht unnötig viel CPU-Zeit in Anspruch nimmt.}\\
+
+\noindent
+Das Skript ist in Listing~\ref{lst:sirene} angegeben.\\
+
+\noindent
+Um möglichst wenig CPU-Zeit zu verbrauchen, aber noch verhältnismäßig genau zu arbeiten, wird überprüft, wieviel Sekunden zwischen Schichtende und Zeitmessung vergangen sind - die Differenz wird dann beim ersten Warten auf die nächste volle Minute abgezogen. \\
+
+\noindent
+Ein Test mit Schichtende \texttt{14:00} und \texttt{14:02} und starten des Skripts um \texttt{14:00:25} liefert folgende Ausgabe:
+
+\begin{verbatim}
+Suche nach laufender Sirenensteuerung...
+Killing previous Sirene.sh 85848
+Sirenensteuerung läuft (86807).
+14:00:25 : 25 Sekunden werden für
+           den nächsten Tick abgezogen.
+Sirene eingeschaltet
+14:00:25 Sirene eingeschaltet.
+Sirene ausgeschaltet
+14:01:25 Sirene ausgeschaltet.
+Sirene eingeschaltet
+14:02:00 Sirene eingeschaltet.
+Sirene ausgeschaltet
+14:03:00 Sirene ausgeschaltet.
+\end{verbatim}
+
+\begin{listing}[H]
+    \begin{minted}[linenos,fontsize=\small]{bash}
+#! /bin/bash
+
+# after DURATION seconds, a running sirene will be switched off
+DURATION=60
+
+# wait for WAIT seconds in between time measurements
+WAIT=60
+
+# compute the seconds that have already passed once
+# we branch into end of shift. if WAIT-OVERFLOW is less than
+# zero, we might have encountered leap seconds,
+# which will not be considered in further delta calculations
+OVERFLOW=0
+
+# remove previous processes
+echo "Suche nach laufender Sirenensteuerung..."
+prevproc=$(ps hS -o pid -C Sirene.sh)
+for i in $prevproc
+    do
+        if [[ ${i} -ne $$ ]]
+            then
+                echo "Killing previous Sirene.sh ${i}"
+                kill ${i}
+        fi
+    done
+
+
+echo "Sirenensteuerung läuft (${$})."
+
+while true
+    do
+
+        time=$(date "+%H:%M")
+
+        case "${time}" in
+            "06:00" | "14:00" | "22:00")
+                OVERFLOW=$(date "+%-S")
+
+                if [[ ${OVERFLOW} -gt 0 ]]
+                    then
+                        echo "$(date "+%H:%M:%S") : ${OVERFLOW} Sekunden werden für"
+                        echo "           den nächsten Tick abgezogen."
+                fi
+
+                ./Sirene_Ein.sh
+                echo "$(date '+%H:%M:%S') Sirene eingeschaltet."
+                sleep ${DURATION}
+                ./Sirene_Aus.sh
+                echo "$(date '+%H:%M:%S') Sirene ausgeschaltet."
+            ;;
+        esac
+
+        if [ $((WAIT - OVERFLOW)) -lt 0 ]
+            then
+                sleep 0
+            else
+                sleep $((WAIT - OVERFLOW))
+            fi
+        OVERFLOW=0
+    done
+    \end{minted}
+    \caption{\texttt{Sirene.sh}}
+    \label{lst:sirene}
+\end{listing}
