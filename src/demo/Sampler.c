@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 
 
 /**
  * ES5, 3.1
+ *
+ * compile w/ linking to math libs, e.g.
+ * $  gcc Sampler.c -o Sampler -lm
  */
 int main() {
 
@@ -30,4 +34,5 @@ int main() {
         printf("x[%d] = %f\n", i, x[i]);
     }
 
+    return EXIT_SUCCESS;
 }
