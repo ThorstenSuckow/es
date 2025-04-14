@@ -5,26 +5,26 @@
 \textit{Warum ist es wichtig zu wissen, an welcher Speicherstelle das Programm startet?}\\
 
 \noindent
-Wir dürfen für den allgemeinen Fall feststellen: Ohne Kenntnis der Startadresse eines Programm ist ein \textbf{deterministischer Rechenbetrieb nicht möglich}.\\
+Wir dürfen für den allgemeinen Fall feststellen: Ohne Kenntnis der Startadresse eines Programms ist ein \textbf{deterministischer Rechenbetrieb nicht möglich}.\\
 
 \noindent
 Über den Befehlszähler angegebene Operationen zeigen auf den nächsten auszuführenden Befehl\footnote{
     Ein \textbf{Befehlszähler} als Teil eines \textbf{Leitwerks}\footnote{
-        hier insb. bei der Von-Neumann-Rechnerarchitektur
-    } ist ein Register, der die Adressen des als nächstes auszuführenden Maschinen-Befehls enthält (vgl.~\cite[234]{Fri21}).
-}, daraus ergeben sich in Gesamtheit auszuführenden Rechenoperationen (\textit{Programme}, \textit{Transaktionen} usw.).\\
-Würde die Information fehlen, an welcher Stelle ein Programm startet,  würde u.a. Speicher nicht richtig initialisiert oder zurückgesetzt.
+        hier insbesondere bei der Von-Neumann-Rechnerarchitektur
+    } ist ein Register, das die Adresse des als Nächstes auszuführenden Maschinenbefehls enthält (vgl.~\cite[234]{Fri21}).
+}, daraus ergeben sich in Gesamtheit auszuführende Rechenoperationen (\textit{Programme}, \textit{Transaktionen} usw.).\\
+Würde die Information fehlen, an welcher Stelle ein Programm startet, würde u.\,a. der Speicher nicht richtig initialisiert oder zurückgesetzt.
 So zeigen \textit{Bollenbacher und Liell} in~\cite[\textbf{Tabelle 19}, 86]{ES1} ein Programm zur Addition zweier Zahlen auf dem M6800\footnote{
-\url{https://en.wikipedia.org/wiki/Motorola_6800}, abgerufen 22.03.2025
+    \url{https://en.wikipedia.org/wiki/Motorola_6800}, abgerufen 22.03.2025
 }, das mit der Instruktion \texttt{CLR A}\footnote{
-s. a. \url{http://www.8bit-era.cz/6800.html#CLR}, abgerufen 22.03.2025
-} beginnt, und damit den Inhalt des  Akkumulators\footnote{
-Register zur Aufnahme von Operanden bzw. Ergebnissen einer Rechenoperation, vgl.~\cite[233]{Fri21})
+    s. a. \url{http://www.8bit-era.cz/6800.html#CLR}, abgerufen 22.03.2025
+} beginnt und damit den Inhalt des Akkumulators\footnote{
+    Register zur Aufnahme von Operanden bzw. Ergebnissen einer Rechenoperation, vgl.~\cite[233]{Fri21}
 } löscht.
-Würde in diesem Beispiel die Startadresse des Programms nicht bekannt sein, würde - sofern überhaupt eine (sinnvolle) Rechenoperation ausgeführt wird - unter hoher Wahrscheinlichkeit mit Artefakten vorhergehender Rechenoperationen gearbeitet bzw. das Programm in einem fremden Adressraum operieren.\\
+Würde in diesem Beispiel die Startadresse des Programms nicht bekannt sein, würde - sofern überhaupt eine (sinnvolle) Rechenoperation ausgeführt wird - mit hoher Wahrscheinlichkeit mit Artefakten vorhergehender Rechenoperationen gearbeitet bzw. das Programm in einem fremden Adressraum operieren.\\
 
 \noindent
-(Abstrahieren wir ausgehend von dem geg. Beispiel des Assemblerprogramms weiter, können wir die Startadresse wie den \textit{Startzustand} eines Turingautomaten verstehen, der entsprechend einer geg. Zustandsüberführungsfunktion $\delta$ (dem \textit{Turingprogramm}, vgl.~\cite[269 f.]{VW16h}) eine Eingabe verarbeitet.)
+(Abstrahieren wir ausgehend von dem gegebenen Beispiel des Assemblerprogramms weiter, können wir die Startadresse wie den \textit{Startzustand} eines Turingautomaten verstehen, der entsprechend einer gegebenen Zustandsüberführungsfunktion $\delta$ (dem \textit{Turingprogramm}, vgl.~\cite[269 f.]{VW16h}) eine Eingabe verarbeitet.)
 
 \section{Teil 2}
 
@@ -64,11 +64,9 @@ Der Lösungsvorschlag ist in Tabelle~\ref{tab:speicherinstruktionen} angegeben.
     \label{tab:speicherinstruktionen}
 \end{table}
 
-
 \section{Teil 3}
 
-\textit{(1) Welche Speicherstellen werden für die Ablage von Instruktionen
-verwendet?}\\
+\textit{(1) Welche Speicherstellen werden für die Ablage von Instruktionen verwendet?}\\
 
 \noindent
 Es werden die folgenden Speicherstellen für die Ablage von Instruktionen verwendet:
@@ -132,15 +130,16 @@ Es werden die folgenden Speicherstellen für die Ablage von Daten verwendet:
 
 \noindent
 \begin{itemize}
-    \itemsep0.5em
-    \item \texttt{start}
-    \item[] In dem Programmteil werden die Variablen initialisiert.
-    In den Akkumulator \code{A} wird der Wert von \code{value} geschrieben; da sich \code{value} während der Programmausführung nie ändert, wird \code{A} im weiteren Programmablauf an dieser Stelle - da durch \code{CLR A}  der Inhalt des Akkumulators vorher gelöscht wird - immer mit dem Wert $64$ (dezimal) belegt.\\
-    Der Inhalt des Akkumulators wird daraufhin in die durch \code{result1} repräsentierte Speicherstelle geschrieben.\\
-     Anschliessen wird zu dem Wert in \code{A} der Wert $15$ (dezimal) hinzuaddiert, das Ergebnis entspricht etwa \code{A = 79}.\\
-    \code{result1} bleibt indes unverändert.
-    \item \texttt{next}
-    \item[] Der Programmteil \texttt{start} springt in den durch den Identifier ausgezeichneten Programmteil \texttt{next}.\\
-    Hier wird der Wert von \code{A} in die Speicherstelle von \code{result2} geschrieben (entspricht etwa \code{result2 = 79}).\\
-    Danach wird zurück in den Programmteil \texttt{start} gesprungen, die Ausführung wiederholt sich.
+\itemsep0.5em
+\item \texttt{start}
+\item[] In dem Programmteil werden die Variablen initialisiert.
+In den Akkumulator \code{A} wird der Wert von \code{value} geschrieben; da sich \code{value} während der Programmausführung nie ändert, wird \code{A} im weiteren Programmablauf an dieser Stelle - da durch \code{CLR A} der Inhalt des Akkumulators vorher gelöscht wird - immer mit dem Wert $64$ (dezimal) belegt.\\
+Der Inhalt des Akkumulators wird daraufhin in die durch \code{result1} repräsentierte Speicherstelle geschrieben.\\
+Anschließend wird zu dem Wert in \code{A} der Wert $15$ (dezimal) hinzuaddiert, das Ergebnis entspricht etwa \code{A = 79}.\\
+\code{result1} bleibt indes unverändert.
+
+\item \texttt{next}
+\item[] Der Programmteil \texttt{start} springt in den durch den Identifier ausgezeichneten Programmteil \texttt{next}.\\
+Hier wird der Wert von \code{A} in die Speicherstelle von \code{result2} geschrieben (entspricht etwa \code{result2 = 79}).\\
+Danach wird zurück in den Programmteil \texttt{start} gesprungen, die Ausführung wiederholt sich.
 \end{itemize}
