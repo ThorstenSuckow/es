@@ -3,38 +3,37 @@
 \section{Teil 1}
 
 \textit{Erstellen Sie eine Wahrheitstabelle für eine Digitalschaltung, die das Paritätsbit (bei gerader Parität) berechnet.
-Wir gehen im Folgenden davon aus, dass vier Bits übertragen werden sollen,  die durch eine Digitalschaltung mit einem Paritätsbit ergänzt werden sollen.} \\
+Wir gehen im Folgenden davon aus, dass vier Bits übertragen werden sollen, die durch eine Digitalschaltung mit einem Paritätsbit ergänzt werden sollen.} \\
 
 \noindent
-Beispiel für ein Wort (4 Bit, + 1 Paritätsbit), das, unter Angabe gerader Parität, als korrekt übertragen gilt:
+Beispiel für ein Wort (4 Bit + 1 Paritätsbit), das, unter Angabe gerader Parität, als korrekt übertragen gilt:
 
 \begin{equation}\notag
-    \texttt{0 0 0 0 | 0}
+\texttt{0 0 0 0 | 0}
 \end{equation}
 
 \noindent
 Das zu übertragende Wort besteht aus $4$ Bit, die allesamt auf $0$ gesetzt sind.\\
-Die Anzahl der $1$en in dem Wort ist \textit{gerade} (da $2|0$).\\
+Die Anzahl der $1$en in dem Wort ist \textit{gerade} (da $2 \mid 0$).\\
 In dem Fall muss das Paritätsbit (bei \textit{gerader} Parität) ebenfalls auf $0$ gesetzt werden, denn
 
 \begin{itemize}
     \itemsep0.5em
-    \item wird statt der \texttt{0 0 0 0} bspw. \texttt{0 1 0 0} übertragen (Informationswort \texttt{0 1 0 0 | 0}), ist die Anzahl der übertragenen $1$en in dem Wort \textit{ungerade}, das Paritätsbit müsste demnach auf $1$ gesetzt sein, ist aber auf $0$ gesetzt
+    \item wird statt der \texttt{0 0 0 0} bspw. \texttt{0 1 0 0} übertragen (Informationswort \texttt{0 1 0 0 | 0}), ist die Anzahl der übertragenen $1$en in dem Wort \textit{ungerade}, das Paritätsbit müsste demnach auf $1$ gesetzt sein, ist aber auf $0$ gesetzt.
     \item ist das Wort \texttt{0 0 0 0} und das Paritätsbit $1$ (das Informationswort also \texttt{0 0 0 0 | 1}), gilt das Signal ebenfalls als fehlerhaft, da nun wieder eine ungerade Anzahl von $1$en übertragen wurde, das Paritätsbit aber eine gerade Anzahl an $1$en erwartet.
 \end{itemize}
 
 \noindent
-Beispiel für ein Wort ($4$ Bit) mit ungerader Anzahl von $1$en, + Paritätsbit:
+Beispiel für ein Wort ($4$ Bit) mit ungerader Anzahl von $1$en + Paritätsbit:
 
 \begin{itemize}
     \itemsep0.5em
     \item \texttt{0 1 0 0 | 1}: korrekt, da insgesamt $2$ Bit auf $1$ gesetzt sind - inkl. Paritätsbit
-    \item \texttt{0 1 0 1 | 1}: fehlerhaft, Paritätsbit gibt an, dass gerade Anzahl an $1$en erwartet wurde, es finden sich aber $3$ Bit in dem Informationswort, die jeweils auf $1$ gesetzt sind.
+    \item \texttt{0 1 0 1 | 1}: fehlerhaft, Paritätsbit gibt an, dass eine gerade Anzahl an $1$en erwartet wurde, es finden sich aber $3$ Bit in dem Informationswort, die jeweils auf $1$ gesetzt sind.
 \end{itemize}
 
 \noindent
-Insgesamt ergibt sich damit Kombination der Eingangssignale mit dem jeweils berechneten Paritätsbit wie in Tabelle~\ref{tab:paritätsbit} angegeben.
-
+Insgesamt ergibt sich damit die Kombination der Eingangssignale mit dem jeweils berechneten Paritätsbit wie in Tabelle~\ref{tab:paritätsbit} angegeben.
 
 \begin{table}[ht]
     \setlength{\tabcolsep}{0.5em}
@@ -75,11 +74,10 @@ Versuchen Sie, die Schaltfunktionen zu vereinfachen, indem Sie benachbarte Eins-
 Das KV-Diagramm ist in Abbildung~\ref{fig:kv_parität} angegeben.\\
 Es zeigt sich, dass keine Blöcke zusammengefasst werden können.
 
-
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{aufgabe 3/img/kv_parität.svg}
-    \caption{KV-Diagramm für Aufgabe 3.2. Tiefgestellte Ziffern beziehen sich auf die zugehörigen Zeilen in Tabelle~\ref{tab:paritätsbit}.  (Quelle: eigene)}
+    \caption{KV-Diagramm für Aufgabe 3.2. Tiefgestellte Ziffern beziehen sich auf die zugehörigen Zeilen in Tabelle~\ref{tab:paritätsbit}. (Quelle: eigene)}
     \label{fig:kv_parität}
 \end{figure}
 
@@ -108,19 +106,18 @@ Sie fest,\\
 
 \noindent
 Laut dem Datenblatt des SN74150\footnote{
-Quelle: \url{https://www.alldatasheetde.com/datasheet-pdf/download/204647/TI/SN74150.html}, abgerufen 24.03.2025
+    Quelle: \url{https://www.alldatasheetde.com/datasheet-pdf/download/204647/TI/SN74150.html}, abgerufen 24.03.2025
 }
 
 \begin{enumerate}
     \itemsep0.5em
-    \item hat der Multiplexer 16 Eingänge (E0 - E15)
+    \item hat der Multiplexer 16 Eingänge (E0-E15).
     \item werden die Eingangspegel $D, C, B, A$ auf den Ausgang $W$ übertragen, und der Wert entspricht dem Komplement des Signals, das an EN (N = $[0..15]$) anliegt. \\
-    Bspw. ist (informell) $(D = L) \land  (C = L) \land (B = L) \land (A = L) \implies \neg E0$, wobei $L$ für \textit{low level} steht.
-    Berücksichtigt wird hierbei noch der Pin 9, der für \ldots
+    Bspw. ist (informell) $(D = L) \land (C = L) \land (B = L) \land (A = L) \implies \neg E0$, wobei $L$ für \textit{low level} steht. Berücksichtigt wird hierbei noch der Pin 9, der für \ldots
     \item \ldots \texttt{strobe} steht: ``[\ldots] a strobe input which must be at a low logic level to enable these devices``\footnote{
-    Zitat aus dem ang. Dokument
+        Zitat aus dem angegebenen Dokument
     }.
-    Daraus lässt sich ableiten, das an dem Ping keine Spannung anliegen darf, damit die Adresseingänge $D, C, B, A$ die entsprechenden Inputs $E0..E15$ durchschalten können.
+    Daraus lässt sich ableiten, dass an dem Pin keine Spannung anliegen darf, damit die Adresseingänge $D, C, B, A$ die entsprechenden Inputs $E0..E15$ durchschalten können.
 \end{enumerate}
 
 \section{Teil 5}
@@ -146,6 +143,6 @@ Die Abbildung mit der vorgeschlagenen Beschaltung ist in Abbildung~\ref{fig:mult
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{aufgabe 3/img/multiplexer.svg}
-    \caption{Schematische Darstellung der Beschaltung eines SN74150 Multiplexers zur Ausgabe eines Paritätsbits basierend auf Tabelle~\ref{tab:paritätsbit}. (Quelle: eigene, Pinbelegung aus Einsendeaufgaben 1, Abbildung 14)}
+    \caption{Schematische Darstellung der Beschaltung eines SN74150-Multiplexers zur Ausgabe eines Paritätsbits basierend auf Tabelle~\ref{tab:paritätsbit}. (Quelle: eigene, Pinbelegung aus Einsendeaufgaben 1, Abbildung 14)}
     \label{fig:multiplexer}
 \end{figure}
