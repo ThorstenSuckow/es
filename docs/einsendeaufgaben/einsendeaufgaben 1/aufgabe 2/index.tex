@@ -4,9 +4,6 @@
 
 \textit{Geben Sie die Schaltfunktionen von $y_3$, $y_2$ und $y_1$ an.}\\
 
-
-\noindent
-
 \noindent
 Zur Erstellung der Schaltfunktionen für die jeweiligen Ausgänge $y_3$, $y_2$, $y_1$ überführen wir zeilenweise in die DNF.\\
 Hierzu bilden wir für die jeweiligen Ausgänge die Minterme\footnote{
@@ -15,7 +12,6 @@ Hierzu bilden wir für die jeweiligen Ausgänge die Minterme\footnote{
 
 \noindent
 Für $y_3$ erhalten wir die DNF wie in~\ref{eq:dnf_y3} angegeben:
-
 
 \begin{equation}\label{eq:dnf_y3}
 \begin{alignat}{3}
@@ -26,7 +22,6 @@ Für $y_3$ erhalten wir die DNF wie in~\ref{eq:dnf_y3} angegeben:
 
 \noindent
 Für $y_2$ erhalten wir die DNF wie in~\ref{eq:dnf_y2} angegeben:
-
 
 \begin{equation}\label{eq:dnf_y2}
 \begin{alignat}{3}
@@ -39,7 +34,6 @@ Für $y_2$ erhalten wir die DNF wie in~\ref{eq:dnf_y2} angegeben:
 \noindent
 Für $y_1$ erhalten wir die DNF wie in~\ref{eq:dnf_y1} angegeben:
 
-
 \begin{equation}\label{eq:dnf_y1}
 \begin{alignat}{3}
     y_1 =\ &(\neg a \ \land \neg b \ \land \neg c \ \land \phantom{\neg} d)\ \lor && \text{(1)}  \\
@@ -51,15 +45,13 @@ Für $y_1$ erhalten wir die DNF wie in~\ref{eq:dnf_y1} angegeben:
 \end{alignat}
 \end{equation}
 
-
 \section{Teil 2}
 
 \textit{Prüfen Sie anhand der KV-Diagramme nach, ob $y_3$, $y_2$ und $y_1$ minimiert
 werden können. Wenn Minimierungen möglich sind, markieren Sie die Bereiche in den KV-Diagrammen.}\\
 
 \noindent
-Die KV-Diagramme sind in den Abbildungen~\ref{fig:kv_y1} für $y_1$, ~\ref{fig:kv_y2} für $y_2$ und ~\ref{fig:kv_y2} für $y_3$ dargestellt (Subskripte verweisen auf die Zeilen der in der Aufgabenstellung angegebenen Tabelle).
-\\
+Die KV-Diagramme sind in den Abbildungen~\ref{fig:kv_y1} für $y_1$,~\ref{fig:kv_y2} für $y_2$ und~\ref{fig:kv_y3} für $y_3$ dargestellt (Subskripte verweisen auf die Zeilen der in der Aufgabenstellung angegebenen Tabelle).\\
 
 \begin{figure}
     \centering
@@ -75,7 +67,6 @@ Die KV-Diagramme sind in den Abbildungen~\ref{fig:kv_y1} für $y_1$, ~\ref{fig:k
     \label{fig:kv_y2}
 \end{figure}
 
-
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{aufgabe 2/img/kv_y1.svg}
@@ -86,11 +77,9 @@ Die KV-Diagramme sind in den Abbildungen~\ref{fig:kv_y1} für $y_1$, ~\ref{fig:k
 \noindent
 Wie sich aus den Diagrammen ergibt, sind keine Minimierungen möglich.
 
-
 \section{Teil 3 und Teil 4}
 
 \textit{Geben Sie eine Schaltung für $y_3$ und $y_2$ an.}\\
-
 
 \noindent
 Die Schaltungen für $y_3$ und $y_2$ sind in den Abbildungen~\ref{fig:schaltplan_y3} und~\ref{fig:schaltplan_y2} angegeben.
@@ -103,11 +92,9 @@ Hierbei wurden die Gatter - wo angebracht - der Übersicht halber mit mehr als z
     \label{fig:schaltplan_y3}
 \end{figure}
 
-
 \begin{figure}
     \centering
     \includegraphics[scale=0.52]{aufgabe 2/img/schaltplan_y2}
     \caption{Schaltung für $y_2$ (Quelle: eigene)}
     \label{fig:schaltplan_y2}
 \end{figure}
-
