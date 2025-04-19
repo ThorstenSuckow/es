@@ -1,0 +1,32 @@
+\chapter{Aufgabe 3}
+
+\section{Teil 1}
+
+\textit{Ein UHF-RFID-Reader kann nicht nur einzelne, sondern viele Transponder gleichzeitig erfassen (Pulkerfassung, engl. Bulk Reading). Wie
+funktioniert das - es müssten dazu die einzelnen Transponder voneinander unterschieden werden?}\\
+
+\noindent
+Das \textit{Bulk Reading} sieht sich u.a. zwei Herausforderungen gegenüber:
+
+\begin{enumerate}
+    \itemsep0.5em
+    \item Zuverlässiges \textit{Lesen} von RFID-Tags in Bereichen mit einer hohen Anzahl gleichzeitig antwortender Tags\footnote{
+    siehe hierzu auch Teilaufgaben~\ref{sec:2_4}.
+    }
+    \item Zuverlässiges \textit{Identifizieren} der Signale zur eindeutigen Zuordnung zu den einzelnen Tags
+\end{enumerate}
+
+\noindent
+Damit dies funktioniert, kann der \textbf{RSSI} (\textit{Radio Signal Strength Indicator}) verwendet werden, der die gemessene Feldstärkewerte beim Lesen meldet (vgl.~\cite[136]{ES5}) und so dem Leser Auskunft über ungefähre Position und Abstand des Transponders liefert.\\
+\textit{Finkenzeller} stellt in~\cite[194]{Fin10} verschiedene Verfahren vor, um das Problem von Signalkollisionen in den Griff zu bekommen, darunter \textit{SDMA} (\textit{Space Division Multiple Access}), bei der die Reichweite einzelner Leser verringert wird, aber mehrere Leser in einem Feld angeordnet sind, um einen bestimmten Bereich zu erfassen - diese Felder werden der Reihe aktiviert/deaktiviert, um Signale, die in den entsprechenden Bereichen vorkommen, zu messen.\\
+Protokolle, die auf \textit{TDMA} (\textit{Time Domain Multiple Access}) basieren, spezifizieren u.a. das ``Stummschalten`` des Transponders, sobald der Leser ihr Signal erkannt hat.\\
+Ein Verfahren, das auf \textit{TDMA} aufbaut, ist das \textit{Slotted ALOHA}-Verfahren, bei denen der Leser Zeitbereiche (``time slots``) vorgibt, in denen er Signale erwartet.
+Die Transponder wählen daraufhin \textit{zufällig} einen Slot aus, in dem sie ihr Signal senden, um mögliche Kollisionen durch gleichzeitiges Senden zu vermeiden:
+
+\blockquote[{\cite[201]{Fin10}}]{
+    ``In this procedure, transponders may only begin to transmit data
+    packets at defined, synchronous points in time (slots). The synchronisation of all transponders
+    necessary for this must be controlled by the reader. This is therefore a stochastic, interrogator-driven
+    TDMA anticollision procedure.``
+}
+
